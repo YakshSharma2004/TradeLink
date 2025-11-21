@@ -1,0 +1,284 @@
+import { useState } from 'react';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './ui/card';
+import { Button } from './ui/button';
+import { Input } from './ui/input';
+import { Label } from './ui/label';
+import { Textarea } from './ui/textarea';
+import { Avatar, AvatarFallback } from './ui/avatar';
+import { ArrowLeft, User, Mail, Phone, Briefcase, Edit2, Save } from 'lucide-react';
+import { UserRole } from '../types';
+import { toast } from 'sonner@2.0.3';
+
+interface ProfileViewProps {
+  userName: string;
+  userEmail: string;
+  userRole: UserRole;
+  onBack: () => void;
+}
+
+export function ProfileView({ userName, userEmail, userRole, onBack }: ProfileViewProps) {
+  const [isEditing, setIsEditing] = useState(false);
+  const [name, setName] = useState(userName);
+  const [email, setEmail] = useState(userEmail);
+  const [phone, setPhone] = useState('403-555-0000');
+  const [bio, setBio] = useState('');
+  const [experience, setExperience] = useState('');
+  const [company, setCompany] = useState('');
+
+  const handleSave = () => {
+    toast.success('Profile updated successfully');
+    setIsEditing(false);
+  };
+
+  const handleCancel = () => {
+    setName(userName);
+    setEmail(userEmail);
+    setIsEditing(false);
+  };
+
+  return (
+    <div className="min-h-screen bg-slate-50">
+      {/* Header */}
+      <header className="bg-white border-b border-slate-200 sticky top-0 z-10">
+        <div className="max-w-7xl mx-auto px-4 py-4">
+          <Button variant="ghost" onClick={onBack}>
+            <ArrowLeft className="mr-2 h-4 w-4" />
+            Back
+          </Button>
+          <h1 className="text-3xl text-slate-900 mt-2">Profile</h1>
+          <p className="text-slate-600">Manage your account information</p>
+        </div>
+      </header>
+
+      <main className="max-w-4xl mx-auto px-4 py-8">
+        <div className="space-y-6">
+          {/* Profile Header Card */}
+          <Card>
+            <CardHeader>
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-4">
+                  <Avatar className="h-20 w-20">
+                    <AvatarFallback className="text-2xl">
+                      {name.split(' ').map(n => n[0]).join('')}
+                    </AvatarFallback>
+                  </Avatar>
+                  <div>
+                    <CardTitle className="text-2xl">{name}</CardTitle>
+                    <CardDescription className="text-base capitalize">
+                      {userRole}
+                    </CardDescription>
+                  </div>
+                </div>
+                {!isEditing ? (
+                  <Button onClick={() => setIsEditing(true)}>
+                    <Edit2 className="mr-2 h-4 w-4" />
+                    Edit Profile
+                  </Button>
+                ) : (
+                  <div className="flex gap-2">
+                    <Button variant="outline" onClick={handleCancel}>
+                      Cancel
+                    </Button>
+                    <Button onClick={handleSave}>
+                      <Save className="mr-2 h-4 w-4" />
+                      Save Changes
+                    </Button>
+                  </div>
+                )}
+              </div>
+            </CardHeader>
+          </Card>
+
+          {/* Personal Information */}
+          <Card>
+            <CardHeader>
+              <CardTitle>Personal Information</CardTitle>
+              <CardDescription>Your basic account details</CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="grid md:grid-cols-2 gap-4">
+                <div>
+                  <Label htmlFor="name">Full Name</Label>
+                  <div className="flex items-center gap-2 mt-2">
+                    {isEditing ? (
+                      <Input
+                        id="name"
+                        value={name}
+                        onChange={(e) => setName(e.target.value)}
+                      />
+                    ) : (
+                      <div className="flex items-center gap-2 text-slate-700">
+                        <User className="h-4 w-4 text-slate-500" />
+                        <span>{name}</span>
+                      </div>
+                    )}
+                  </div>
+                </div>
+
+                <div>
+                  <Label htmlFor="email">Email</Label>
+                  <div className="flex items-center gap-2 mt-2">
+                    {isEditing ? (
+                      <Input
+                        id="email"
+                        type="email"
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                      />
+                    ) : (
+                      <div className="flex items-center gap-2 text-slate-700">
+                        <Mail className="h-4 w-4 text-slate-500" />
+                        <span>{email}</span>
+                      </div>
+                    )}
+                  </div>
+                </div>
+
+                <div>
+                  <Label htmlFor="phone">Phone Number</Label>
+                  <div className="flex items-center gap-2 mt-2">
+                    {isEditing ? (
+                      <Input
+                        id="phone"
+                        type="tel"
+                        value={phone}
+                        onChange={(e) => setPhone(e.target.value)}
+                      />
+                    ) : (
+                      <div className="flex items-center gap-2 text-slate-700">
+                        <Phone className="h-4 w-4 text-slate-500" />
+                        <span>{phone}</span>
+                      </div>
+                    )}
+                  </div>
+                </div>
+
+                {userRole === 'tradesman' && (
+                  <div>
+                    <Label htmlFor="experience">Years of Experience</Label>
+                    <div className="flex items-center gap-2 mt-2">
+                      {isEditing ? (
+                        <Input
+                          id="experience"
+                          type="number"
+                          placeholder="0"
+                          value={experience}
+                          onChange={(e) => setExperience(e.target.value)}
+                        />
+                      ) : (
+                        <div className="flex items-center gap-2 text-slate-700">
+                          <Briefcase className="h-4 w-4 text-slate-500" />
+                          <span>{experience || 'Not specified'} years</span>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                )}
+
+                {userRole === 'builder' && (
+                  <div>
+                    <Label htmlFor="company">Company Name</Label>
+                    <div className="flex items-center gap-2 mt-2">
+                      {isEditing ? (
+                        <Input
+                          id="company"
+                          placeholder="Your company"
+                          value={company}
+                          onChange={(e) => setCompany(e.target.value)}
+                        />
+                      ) : (
+                        <div className="flex items-center gap-2 text-slate-700">
+                          <Briefcase className="h-4 w-4 text-slate-500" />
+                          <span>{company || 'Not specified'}</span>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              <div>
+                <Label htmlFor="bio">Bio</Label>
+                <div className="mt-2">
+                  {isEditing ? (
+                    <Textarea
+                      id="bio"
+                      placeholder="Tell us about yourself..."
+                      value={bio}
+                      onChange={(e) => setBio(e.target.value)}
+                      rows={4}
+                    />
+                  ) : (
+                    <p className="text-slate-700 p-3 bg-slate-50 rounded-md">
+                      {bio || 'No bio added yet'}
+                    </p>
+                  )}
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Account Settings */}
+          <Card>
+            <CardHeader>
+              <CardTitle>Account Settings</CardTitle>
+              <CardDescription>Manage your account preferences</CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="flex items-center justify-between p-4 bg-slate-50 rounded-lg">
+                <div>
+                  <p>Account Type</p>
+                  <p className="text-sm text-slate-600 capitalize">{userRole}</p>
+                </div>
+                <Button variant="outline" size="sm">
+                  Change
+                </Button>
+              </div>
+
+              <div className="flex items-center justify-between p-4 bg-slate-50 rounded-lg">
+                <div>
+                  <p>Email Notifications</p>
+                  <p className="text-sm text-slate-600">Receive updates about your listings</p>
+                </div>
+                <Button variant="outline" size="sm">
+                  Configure
+                </Button>
+              </div>
+
+              <div className="flex items-center justify-between p-4 bg-slate-50 rounded-lg">
+                <div>
+                  <p>Password</p>
+                  <p className="text-sm text-slate-600">Last changed 30 days ago</p>
+                </div>
+                <Button variant="outline" size="sm">
+                  Update
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Danger Zone */}
+          <Card className="border-red-200">
+            <CardHeader>
+              <CardTitle className="text-red-600">Danger Zone</CardTitle>
+              <CardDescription>Irreversible account actions</CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="flex items-center justify-between p-4 bg-red-50 rounded-lg">
+                <div>
+                  <p className="text-red-900">Delete Account</p>
+                  <p className="text-sm text-red-700">
+                    Permanently delete your account and all data
+                  </p>
+                </div>
+                <Button variant="outline" size="sm" className="text-red-600 border-red-300 hover:bg-red-50">
+                  Delete
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      </main>
+    </div>
+  );
+}
