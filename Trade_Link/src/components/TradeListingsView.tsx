@@ -2,26 +2,23 @@ import { useState, useMemo } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './ui/card';
 import { Button } from './ui/button';
 import { Badge } from './ui/badge';
-import { Input } from './ui/input';
 import { Label } from './ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select';
 import { Slider } from './ui/slider';
 import { ArrowLeft, MapPin, Clock, Mail, Phone, MessageSquare, DollarSign } from 'lucide-react';
-import { TradeType, ServiceArea, TradeListing } from '../types';
+import { TradeType, ServiceArea } from '../types';
 import { mockTradeListings, serviceAreas } from '../lib/mockData';
 
 interface TradeListingsViewProps {
   tradeType: TradeType;
   onBack: () => void;
-  onContactTradesman: (listing: TradeListing) => void;
   onOpenChat: (tradesmanId: string, tradesmanName: string) => void;
 }
 
-export function TradeListingsView({ 
-  tradeType, 
-  onBack, 
-  onContactTradesman,
-  onOpenChat 
+export function TradeListingsView({
+  tradeType,
+  onBack,
+  onOpenChat
 }: TradeListingsViewProps) {
   const [selectedArea, setSelectedArea] = useState<ServiceArea | 'all'>('all');
   const [maxRate, setMaxRate] = useState<number>(200);
@@ -116,8 +113,8 @@ export function TradeListingsView({
                   />
                 </div>
 
-                <Button 
-                  variant="outline" 
+                <Button
+                  variant="outline"
                   className="w-full"
                   onClick={() => {
                     setSelectedArea('all');
@@ -161,7 +158,7 @@ export function TradeListingsView({
                   </CardHeader>
                   <CardContent className="space-y-4">
                     <p className="text-slate-700">{listing.description}</p>
-                    
+
                     <div className="flex flex-wrap gap-4 text-sm text-slate-600">
                       <div className="flex items-center gap-1">
                         <Clock className="h-4 w-4" />
@@ -170,7 +167,7 @@ export function TradeListingsView({
                       <div className="flex items-center gap-1">
                         <MapPin className="h-4 w-4" />
                         <span>
-                          {listing.serviceAreas.map((area, idx) => (
+                          {listing.serviceAreas.map((area) => (
                             <Badge key={area} variant="secondary" className="ml-1">
                               {area}
                             </Badge>
@@ -180,16 +177,16 @@ export function TradeListingsView({
                     </div>
 
                     <div className="flex gap-2 pt-2">
-                      <Button 
-                        variant="default" 
+                      <Button
+                        variant="default"
                         className="flex-1"
                         onClick={() => onOpenChat(listing.tradesmanId, listing.tradesmanName)}
                       >
                         <MessageSquare className="mr-2 h-4 w-4" />
                         Chat
                       </Button>
-                      <Button 
-                        variant="outline" 
+                      <Button
+                        variant="outline"
                         onClick={() => {
                           window.location.href = `mailto:${listing.email}?subject=Inquiry about ${listing.tradeType} services`;
                         }}
@@ -197,7 +194,7 @@ export function TradeListingsView({
                         <Mail className="mr-2 h-4 w-4" />
                         Email
                       </Button>
-                      <Button 
+                      <Button
                         variant="outline"
                         onClick={() => {
                           window.location.href = `tel:${listing.phone}`;

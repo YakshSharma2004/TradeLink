@@ -7,16 +7,16 @@ import { ChatInterface } from './components/ChatInterface';
 import { AnalyticsDashboard } from './components/AnalyticsDashboard';
 import { ProfileView } from './components/ProfileView';
 import { Toaster } from './components/ui/sonner';
-import { UserRole, TradeType, TradeListing } from './types';
+import { UserRole, TradeType } from './types';
 
-type View = 
-  | 'login' 
-  | 'builder-dashboard' 
+type View =
+  | 'login'
+  | 'builder-dashboard'
   | 'tradesman-dashboard'
   | 'other-dashboard'
-  | 'trade-listings' 
-  | 'chat' 
-  | 'analytics' 
+  | 'trade-listings'
+  | 'chat'
+  | 'analytics'
   | 'profile';
 
 interface AppState {
@@ -42,11 +42,11 @@ export default function App() {
   const handleLogin = (role: UserRole, email: string, name: string) => {
     const userId = Date.now().toString();
     setState({
-      view: role === 'builder' 
-        ? 'builder-dashboard' 
-        : role === 'tradesman' 
-        ? 'tradesman-dashboard'
-        : 'other-dashboard',
+      view: role === 'builder'
+        ? 'builder-dashboard'
+        : role === 'tradesman'
+          ? 'tradesman-dashboard'
+          : 'other-dashboard',
       user: { id: userId, name, email, role },
       selectedTrade: null,
       chatRecipient: null,
@@ -58,8 +58,8 @@ export default function App() {
   };
 
   const handleOpenChat = (recipientId: string, recipientName: string) => {
-    setState(prev => ({ 
-      ...prev, 
+    setState(prev => ({
+      ...prev,
       view: 'chat',
       chatRecipient: { id: recipientId, name: recipientName }
     }));
@@ -71,14 +71,14 @@ export default function App() {
 
   const handleBackToDashboard = () => {
     if (!state.user) return;
-    
+
     setState(prev => ({
       ...prev,
-      view: state.user?.role === 'builder' 
-        ? 'builder-dashboard' 
+      view: state.user?.role === 'builder'
+        ? 'builder-dashboard'
         : state.user?.role === 'tradesman'
-        ? 'tradesman-dashboard'
-        : 'other-dashboard',
+          ? 'tradesman-dashboard'
+          : 'other-dashboard',
       selectedTrade: null,
       chatRecipient: null,
     }));
@@ -134,9 +134,7 @@ export default function App() {
         <TradeListingsView
           tradeType={state.selectedTrade}
           onBack={handleBackToDashboard}
-          onContactTradesman={(listing: TradeListing) => {
-            console.log('Contact tradesman:', listing);
-          }}
+
           onOpenChat={handleOpenChat}
         />
         <Toaster />

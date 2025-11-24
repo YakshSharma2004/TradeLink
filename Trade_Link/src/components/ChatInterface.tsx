@@ -7,6 +7,7 @@ import { Avatar, AvatarFallback } from './ui/avatar';
 import { ArrowLeft, Send, Search } from 'lucide-react';
 import { Message, ChatConversation } from '../types';
 import { mockMessages, mockUsers } from '../lib/mockData';
+import { socket } from '../socket';
 
 interface ChatInterfaceProps {
   currentUserId: string;
@@ -16,12 +17,11 @@ interface ChatInterfaceProps {
   initialRecipientName?: string;
 }
 
-export function ChatInterface({ 
-  currentUserId, 
-  currentUserName, 
+export function ChatInterface({
+  currentUserId,
+  currentUserName,
   onBack,
   initialRecipientId,
-  initialRecipientName 
 }: ChatInterfaceProps) {
   const [messages, setMessages] = useState<Message[]>(mockMessages);
   const [selectedConversation, setSelectedConversation] = useState<string | null>(
@@ -29,6 +29,7 @@ export function ChatInterface({
   );
   const [messageInput, setMessageInput] = useState('');
   const [searchQuery, setSearchQuery] = useState('');
+  const [isConnected, setIsConnected] = useState(socket.connected);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   const scrollToBottom = () => {
@@ -39,18 +40,65 @@ export function ChatInterface({
     scrollToBottom();
   }, [messages, selectedConversation]);
 
+  useEffect(() => {
+    function onConnect() {
+      setIsConnected(true);
+      console.log('Socket connected');
+      // Identify user upon connection
+      socket.emit('join', currentUserId);
+    }
+
+    function onDisconnect() {
+      setIsConnected(false);
+      console.log('Socket disconnected');
+    }
+
+    function onReceiveMessage(message: any) {
+      console.log('Received message:', message);
+      // Adapt the incoming message to our Message type if necessary
+      // Assuming the server sends a message object compatible with our type
+      // or we construct it here.
+      // For now, let's assume the server sends the full message object.
+
+      // We need to make sure the timestamp is a Date object
+      const newMessage: Message = {
+        ...message,
+        timestamp: new Date(message.timestamp),
+      };
+
+      setMessages((prev: Message[]) => [...prev, newMessage]);
+    }
+
+    socket.on('connect', onConnect);
+    socket.on('disconnect', onDisconnect);
+    socket.on('receive_message', onReceiveMessage);
+
+    // Initial connection check and join
+    if (socket.connected) {
+      onConnect();
+    } else {
+      socket.connect();
+    }
+
+    return () => {
+      socket.off('connect', onConnect);
+      socket.off('disconnect', onDisconnect);
+      socket.off('receive_message', onReceiveMessage);
+    };
+  }, [currentUserId]);
+
   // Get conversations
   const conversations: ChatConversation[] = mockUsers
     .filter(user => user.id !== currentUserId)
     .map(user => {
       const userMessages = messages.filter(
         m => (m.senderId === user.id || m.receiverId === user.id) &&
-             (m.senderId === currentUserId || m.receiverId === currentUserId)
+          (m.senderId === currentUserId || m.receiverId === currentUserId)
       );
-      const lastMessage = userMessages.sort((a, b) => 
+      const lastMessage = userMessages.sort((a, b) =>
         b.timestamp.getTime() - a.timestamp.getTime()
       )[0];
-      
+
       return {
         userId: user.id,
         userName: user.name,
@@ -59,26 +107,26 @@ export function ChatInterface({
         unreadCount: userMessages.filter(m => !m.read && m.receiverId === currentUserId).length,
       };
     })
-    .filter(conv => 
-      searchQuery === '' || 
+    .filter(conv =>
+      searchQuery === '' ||
       conv.userName.toLowerCase().includes(searchQuery.toLowerCase())
     );
 
   // Get messages for selected conversation
   const conversationMessages = selectedConversation
     ? messages
-        .filter(
-          m => (m.senderId === selectedConversation && m.receiverId === currentUserId) ||
-               (m.senderId === currentUserId && m.receiverId === selectedConversation)
-        )
-        .sort((a, b) => a.timestamp.getTime() - b.timestamp.getTime())
+      .filter(
+        m => (m.senderId === selectedConversation && m.receiverId === currentUserId) ||
+          (m.senderId === currentUserId && m.receiverId === selectedConversation)
+      )
+      .sort((a, b) => a.timestamp.getTime() - b.timestamp.getTime())
     : [];
 
   const selectedUser = mockUsers.find(u => u.id === selectedConversation);
 
   const handleSendMessage = (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!messageInput.trim() || !selectedConversation) return;
 
     const newMessage: Message = {
@@ -92,20 +140,30 @@ export function ChatInterface({
       read: false,
     };
 
-    setMessages(prev => [...prev, newMessage]);
+    // Optimistic update
+    setMessages((prev: Message[]) => [...prev, newMessage]);
     setMessageInput('');
+
+    // Emit to server
+    socket.emit('send_message', newMessage);
   };
 
   return (
     <div className="min-h-screen bg-slate-50">
       {/* Header */}
       <header className="bg-white border-b border-slate-200 sticky top-0 z-10">
-        <div className="max-w-7xl mx-auto px-4 py-4">
-          <Button variant="ghost" onClick={onBack}>
-            <ArrowLeft className="mr-2 h-4 w-4" />
-            Back
-          </Button>
-          <h1 className="text-3xl text-slate-900 mt-2">Messages</h1>
+        <div className="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
+          <div className="flex items-center">
+            <Button variant="ghost" onClick={onBack}>
+              <ArrowLeft className="mr-2 h-4 w-4" />
+              Back
+            </Button>
+            <h1 className="text-3xl text-slate-900 mt-2 ml-4">Messages</h1>
+          </div>
+          <div className="flex items-center gap-2">
+            <div className={`w-3 h-3 rounded-full ${isConnected ? 'bg-green-500' : 'bg-red-500'}`} />
+            <span className="text-sm text-slate-600">{isConnected ? 'Connected' : 'Disconnected'}</span>
+          </div>
         </div>
       </header>
 
@@ -121,7 +179,7 @@ export function ChatInterface({
                   placeholder="Search conversations..."
                   className="pl-8"
                   value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSearchQuery(e.target.value)}
                 />
               </div>
             </CardHeader>
@@ -136,9 +194,8 @@ export function ChatInterface({
                     {conversations.map(conv => (
                       <div
                         key={conv.userId}
-                        className={`p-4 border-b border-slate-200 cursor-pointer hover:bg-slate-50 transition-colors ${
-                          selectedConversation === conv.userId ? 'bg-slate-100' : ''
-                        }`}
+                        className={`p-4 border-b border-slate-200 cursor-pointer hover:bg-slate-50 transition-colors ${selectedConversation === conv.userId ? 'bg-slate-100' : ''
+                          }`}
                         onClick={() => setSelectedConversation(conv.userId)}
                       >
                         <div className="flex items-start gap-3">
@@ -158,9 +215,9 @@ export function ChatInterface({
                             </div>
                             <p className="text-sm text-slate-600 truncate">{conv.lastMessage}</p>
                             <p className="text-xs text-slate-500 mt-1">
-                              {conv.lastMessageTime.toLocaleTimeString([], { 
-                                hour: '2-digit', 
-                                minute: '2-digit' 
+                              {conv.lastMessageTime.toLocaleTimeString([], {
+                                hour: '2-digit',
+                                minute: '2-digit'
                               })}
                             </p>
                           </div>
@@ -202,17 +259,15 @@ export function ChatInterface({
                             className={`flex ${isSent ? 'justify-end' : 'justify-start'}`}
                           >
                             <div
-                              className={`max-w-[70%] rounded-lg p-3 ${
-                                isSent
-                                  ? 'bg-blue-500 text-white'
-                                  : 'bg-slate-200 text-slate-900'
-                              }`}
+                              className={`max-w-[70%] rounded-lg p-3 ${isSent
+                                ? 'bg-blue-500 text-white'
+                                : 'bg-slate-200 text-slate-900'
+                                }`}
                             >
                               <p className="break-words">{message.message}</p>
                               <p
-                                className={`text-xs mt-1 ${
-                                  isSent ? 'text-blue-100' : 'text-slate-600'
-                                }`}
+                                className={`text-xs mt-1 ${isSent ? 'text-blue-100' : 'text-slate-600'
+                                  }`}
                               >
                                 {message.timestamp.toLocaleTimeString([], {
                                   hour: '2-digit',

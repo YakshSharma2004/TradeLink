@@ -4,11 +4,11 @@ import { Button } from './ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from './ui/tabs';
 import { ArrowLeft, TrendingUp, DollarSign, MapPin, Briefcase } from 'lucide-react';
-import { 
-  BarChart, Bar, LineChart, Line, PieChart, Pie, Cell,
-  XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer 
+import {
+  BarChart, Bar, PieChart, Pie, Cell,
+  XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer
 } from 'recharts';
-import { TradeType, ServiceArea } from '../types';
+import { TradeType } from '../types';
 import { tradeTypes, serviceAreas, mockTradeListings } from '../lib/mockData';
 
 interface AnalyticsDashboardProps {
@@ -17,7 +17,6 @@ interface AnalyticsDashboardProps {
 
 export function AnalyticsDashboard({ onBack }: AnalyticsDashboardProps) {
   const [selectedTrade, setSelectedTrade] = useState<TradeType>('Framing');
-  const [selectedArea, setSelectedArea] = useState<ServiceArea>('NW');
 
   // Calculate statistics
   const totalListings = mockTradeListings.length;
@@ -180,8 +179,8 @@ export function AnalyticsDashboard({ onBack }: AnalyticsDashboardProps) {
                   <ResponsiveContainer width="100%" height={300}>
                     <BarChart data={ratesByTrade}>
                       <CartesianGrid strokeDasharray="3 3" />
-                      <XAxis 
-                        dataKey="trade" 
+                      <XAxis
+                        dataKey="trade"
                         angle={-45}
                         textAnchor="end"
                         height={100}
@@ -250,7 +249,7 @@ export function AnalyticsDashboard({ onBack }: AnalyticsDashboardProps) {
                         fill="#8884d8"
                         dataKey="value"
                       >
-                        {tradeDistribution.map((entry, index) => (
+                        {tradeDistribution.map((_, index) => (
                           <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                         ))}
                       </Pie>

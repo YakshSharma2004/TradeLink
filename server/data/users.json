@@ -1,0 +1,50 @@
+[
+    {
+        "id": "1",
+        "name": "John Builder",
+        "email": "john@builder.com",
+        "phone": "403-555-0001",
+        "role": "builder",
+        "createdAt": "2024-01-15T00:00:00.000Z"
+    },
+    {
+        "id": "2",
+        "name": "Mike Carpenter",
+        "email": "mike@carpenter.com",
+        "phone": "403-555-0002",
+        "role": "tradesman",
+        "experience": 15,
+        "bio": "Experienced framing carpenter with 15 years in Calgary construction.",
+        "createdAt": "2024-02-01T00:00:00.000Z"
+    },
+    {
+        "id": "3",
+        "name": "Sarah Plumber",
+        "email": "sarah@plumber.com",
+        "phone": "403-555-0003",
+        "role": "tradesman",
+        "experience": 10,
+        "bio": "Licensed plumber specializing in residential new builds.",
+        "createdAt": "2024-02-10T00:00:00.000Z"
+    },
+    {
+        "id": "4",
+        "name": "Tom Electrician",
+        "email": "tom@electric.com",
+        "phone": "403-555-0004",
+        "role": "tradesman",
+        "experience": 12,
+        "bio": "Master electrician, certified for residential and commercial work.",
+        "createdAt": "2024-02-15T00:00:00.000Z"
+    },
+    {
+        "id": "5",
+        "name": "Dave Roofer",
+        "email": "dave@roofing.com",
+        "phone": "403-555-0005",
+        "role": "tradesman",
+        "experience": 20,
+        "bio": "Roofing specialist with 20 years experience in Calgary climate.",
+        "createdAt": "2024-03-01T00:00:00.000Z"
+    }
+]

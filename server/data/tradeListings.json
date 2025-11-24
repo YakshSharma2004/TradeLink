@@ -1,0 +1,142 @@
+[
+    {
+        "id": "1",
+        "tradesmanId": "2",
+        "tradesmanName": "Mike Carpenter",
+        "tradeType": "Framing",
+        "rate": 45,
+        "rateUnit": "per hour",
+        "serviceAreas": [
+            "NW",
+            "NE"
+        ],
+        "experience": 15,
+        "description": "Professional framing services for residential construction. Quality work, on time.",
+        "phone": "403-555-0002",
+        "email": "mike@carpenter.com",
+        "createdAt": "2024-02-01T00:00:00.000Z"
+    },
+    {
+        "id": "2",
+        "tradesmanId": "3",
+        "tradesmanName": "Sarah Plumber",
+        "tradeType": "Plumber",
+        "rate": 85,
+        "rateUnit": "per hour",
+        "serviceAreas": [
+            "SW",
+            "SE"
+        ],
+        "experience": 10,
+        "description": "Licensed plumber for rough-in and finish work. Free estimates.",
+        "phone": "403-555-0003",
+        "email": "sarah@plumber.com",
+        "createdAt": "2024-02-10T00:00:00.000Z"
+    },
+    {
+        "id": "3",
+        "tradesmanId": "4",
+        "tradesmanName": "Tom Electrician",
+        "tradeType": "Electrician",
+        "rate": 90,
+        "rateUnit": "per hour",
+        "serviceAreas": [
+            "NE",
+            "SE",
+            "SW",
+            "NW"
+        ],
+        "experience": 12,
+        "description": "Master electrician. Rough-in, service upgrades, and finish electrical.",
+        "phone": "403-555-0004",
+        "email": "tom@electric.com",
+        "createdAt": "2024-02-15T00:00:00.000Z"
+    },
+    {
+        "id": "4",
+        "tradesmanId": "5",
+        "tradesmanName": "Dave Roofer",
+        "tradeType": "Roofing",
+        "rate": 6,
+        "rateUnit": "per sq ft",
+        "serviceAreas": [
+            "NW",
+            "SW"
+        ],
+        "experience": 20,
+        "description": "Complete roofing services. Shingles, metal roofing, and repairs.",
+        "phone": "403-555-0005",
+        "email": "dave@roofing.com",
+        "createdAt": "2024-03-01T00:00:00.000Z"
+    },
+    {
+        "id": "5",
+        "tradesmanId": "2",
+        "tradesmanName": "Mike Carpenter",
+        "tradeType": "Drywall",
+        "rate": 2.5,
+        "rateUnit": "per sq ft",
+        "serviceAreas": [
+            "NW",
+            "NE"
+        ],
+        "experience": 15,
+        "description": "Drywall installation and finishing. Smooth finish guaranteed.",
+        "phone": "403-555-0002",
+        "email": "mike@carpenter.com",
+        "createdAt": "2024-03-05T00:00:00.000Z"
+    },
+    {
+        "id": "6",
+        "tradesmanId": "3",
+        "tradesmanName": "Sarah Plumber",
+        "tradeType": "Heating",
+        "rate": 95,
+        "rateUnit": "per hour",
+        "serviceAreas": [
+            "SW",
+            "SE",
+            "NE"
+        ],
+        "experience": 10,
+        "description": "HVAC installation and service. Furnaces and hot water systems.",
+        "phone": "403-555-0003",
+        "email": "sarah@plumber.com",
+        "createdAt": "2024-03-10T00:00:00.000Z"
+    },
+    {
+        "id": "7",
+        "tradesmanId": "4",
+        "tradesmanName": "Tom Electrician",
+        "tradeType": "Demolition",
+        "rate": 3500,
+        "rateUnit": "per project",
+        "serviceAreas": [
+            "NE",
+            "NW"
+        ],
+        "experience": 12,
+        "description": "Interior demolition for renovations. Safe and efficient.",
+        "phone": "403-555-0004",
+        "email": "tom@electric.com",
+        "createdAt": "2024-03-15T00:00:00.000Z"
+    },
+    {
+        "id": "8",
+        "tradesmanId": "5",
+        "tradesmanName": "Dave Roofer",
+        "tradeType": "Siding",
+        "rate": 8,
+        "rateUnit": "per sq ft",
+        "serviceAreas": [
+            "NW",
+            "SW",
+            "SE"
+        ],
+        "experience": 20,
+        "description": "Vinyl and fiber cement siding installation.",
+        "phone": "403-555-0005",
+        "email": "dave@roofing.com",
+        "createdAt": "2024-03-20T00:00:00.000Z"
+    }
+]

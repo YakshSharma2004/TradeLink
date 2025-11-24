@@ -7,7 +7,7 @@ import { Textarea } from './ui/textarea';
 import { Avatar, AvatarFallback } from './ui/avatar';
 import { ArrowLeft, User, Mail, Phone, Briefcase, Edit2, Save } from 'lucide-react';
 import { UserRole } from '../types';
-import { toast } from 'sonner@2.0.3';
+import { toast } from 'sonner';
 
 interface ProfileViewProps {
   userName: string;

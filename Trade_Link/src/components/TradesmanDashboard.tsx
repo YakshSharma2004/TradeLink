@@ -11,7 +11,7 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, Di
 import { Plus, Edit, Trash2, DollarSign, BarChart3, MessageSquare, User } from 'lucide-react';
 import { TradeType, ServiceArea, TradeListing } from '../types';
 import { tradeTypes, serviceAreas, mockTradeListings } from '../lib/mockData';
-import { toast } from 'sonner@2.0.3';
+import { toast } from 'sonner';
 
 interface TradesmanDashboardProps {
   userName: string;
@@ -25,7 +25,7 @@ export function TradesmanDashboard({ userName, userId, onNavigate }: TradesmanDa
   );
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingListing, setEditingListing] = useState<TradeListing | null>(null);
-  
+
   // Form state
   const [tradeType, setTradeType] = useState<TradeType>('Framing');
   const [rate, setRate] = useState('');
@@ -44,7 +44,7 @@ export function TradesmanDashboard({ userName, userId, onNavigate }: TradesmanDa
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!rate || !experience || selectedAreas.length === 0 || !description) {
       toast.error('Please fill in all required fields');
       return;
@@ -140,7 +140,7 @@ export function TradesmanDashboard({ userName, userId, onNavigate }: TradesmanDa
               <p className="text-4xl text-slate-900">{myListings.length}</p>
             </CardContent>
           </Card>
-          
+
           <Card>
             <CardHeader>
               <CardTitle>Service Areas</CardTitle>
@@ -153,7 +153,7 @@ export function TradesmanDashboard({ userName, userId, onNavigate }: TradesmanDa
               </div>
             </CardContent>
           </Card>
-          
+
           <Card>
             <CardHeader>
               <CardTitle>Trade Categories</CardTitle>
@@ -323,7 +323,7 @@ export function TradesmanDashboard({ userName, userId, onNavigate }: TradesmanDa
                 </CardHeader>
                 <CardContent className="space-y-4">
                   <p className="text-slate-700">{listing.description}</p>
-                  
+
                   <div className="flex flex-wrap gap-2">
                     {listing.serviceAreas.map(area => (
                       <Badge key={area} variant="secondary">{area}</Badge>
@@ -335,8 +335,8 @@ export function TradesmanDashboard({ userName, userId, onNavigate }: TradesmanDa
                       <Edit className="mr-2 h-4 w-4" />
                       Edit
                     </Button>
-                    <Button 
-                      variant="outline" 
+                    <Button
+                      variant="outline"
                       className="flex-1 text-red-600 hover:text-red-700"
                       onClick={() => handleDelete(listing.id)}
                     >
