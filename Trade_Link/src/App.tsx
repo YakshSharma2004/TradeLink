@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { LoginPage } from './components/LoginPage';
+import { SignUpPage } from './components/SignUpPage';
 import { BuilderDashboard } from './components/BuilderDashboard';
 import { TradesmanDashboard } from './components/TradesmanDashboard';
 import { TradeListingsView } from './components/TradeListingsView';
@@ -11,6 +12,7 @@ import { UserRole, TradeType } from './types';
 
 type View =
   | 'login'
+  | 'signup'
   | 'builder-dashboard'
   | 'tradesman-dashboard'
   | 'other-dashboard'
@@ -53,6 +55,12 @@ export default function App() {
     });
   };
 
+  const handleSignup = (role: UserRole, email: string, name: string, phone?: string) => {
+    // For now, just log them in after signup
+    // In production, this would call the API first
+    handleLogin(role, email, name);
+  };
+
   const handleSelectTrade = (trade: TradeType) => {
     setState(prev => ({ ...prev, view: 'trade-listings', selectedTrade: trade }));
   };
@@ -85,8 +93,18 @@ export default function App() {
   };
 
   // Render based on current view
+  console.log('Current view:', state.view);
+
+  // Check signup FIRST before checking login/user
+  if (state.view === 'signup') {
+    return <SignUpPage onSignup={handleSignup} onBackToLogin={() => setState(prev => ({ ...prev, view: 'login' }))} />;
+  }
+
   if (state.view === 'login' || !state.user) {
-    return <LoginPage onLogin={handleLogin} />;
+    return <LoginPage onLogin={handleLogin} onNavigateToSignup={() => {
+      console.log('Navigating to signup...');
+      setState(prev => ({ ...prev, view: 'signup' }));
+    }} />;
   }
 
   if (state.view === 'builder-dashboard') {

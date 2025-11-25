@@ -4,36 +4,52 @@ import { Input } from './ui/input';
 import { Label } from './ui/label';
 import { Hammer } from 'lucide-react';
 import { UserRole } from '../types';
+import { login } from '../lib/api';
 
 interface LoginPageProps {
   onLogin: (role: UserRole, email: string, name: string) => void;
+  onNavigateToSignup: () => void;
 }
 
-export function LoginPage({ onLogin }: LoginPageProps) {
+export function LoginPage({ onLogin, onNavigateToSignup }: LoginPageProps) {
   const [selectedRole, setSelectedRole] = useState<UserRole>('builder');
   const [email, setEmail] = useState('');
   const [name, setName] = useState('');
 
-  const handleSubmit = (e: React.FormEvent) => {
+
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (email && name) {
-      onLogin(selectedRole, email, name);
+    console.log('Login attempt for:', email);
+
+    try {
+      // Call the API to verify user exists and matches role
+      const user = await login({ email, role: selectedRole });
+
+      // Store user in localStorage
+      localStorage.setItem('user', JSON.stringify(user));
+
+      // Call parent's onLogin with the data from API
+      onLogin(user.role, user.email, user.name);
+    } catch (err) {
+      console.error('Login failed:', err);
+      alert('Login failed. User not found.');
     }
   };
 
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-indigo-100 via-purple-50 to-pink-100 flex items-center justify-center p-4">
+    <div className="min-h-screen bg-slate-50 flex items-center justify-center p-4">
       <div className="w-full max-w-xl">
-        <div className="bg-white rounded-3xl shadow-xl p-8">
+        <div className="bg-white rounded-3xl shadow-xl p-8 border border-slate-100">
           {/* Header */}
           <div className="mb-8">
             <div className="flex items-center gap-3 mb-4">
-              <div className="w-12 h-12 bg-slate-900 rounded-full flex items-center justify-center">
+              <div className="w-12 h-12 bg-gradient-construction rounded-xl flex items-center justify-center shadow-lg shadow-blue-900/20">
                 <Hammer className="w-6 h-6 text-white" />
               </div>
-              <h1 className="text-3xl text-slate-900">Trade Link</h1>
+              <h1 className="text-3xl font-bold text-slate-900 tracking-tight">Trade Link</h1>
             </div>
-            <p className="text-slate-600">
+            <p className="text-slate-500 font-medium">
               Connect with Calgary's construction community
             </p>
           </div>
@@ -43,40 +59,37 @@ export function LoginPage({ onLogin }: LoginPageProps) {
             <button
               type="button"
               onClick={() => setSelectedRole('builder')}
-              className={`flex-1 py-3 px-4 rounded-lg transition-all ${
-                selectedRole === 'builder'
-                  ? 'bg-white shadow-sm'
-                  : 'hover:bg-slate-50'
-              }`}
+              className={`flex-1 py-3 px-4 rounded-lg transition-all ${selectedRole === 'builder'
+                ? 'bg-white shadow-sm'
+                : 'hover:bg-slate-50'
+                }`}
             >
               Builder Login
             </button>
             <button
               type="button"
               onClick={() => setSelectedRole('tradesman')}
-              className={`flex-1 py-3 px-4 rounded-lg transition-all ${
-                selectedRole === 'tradesman'
-                  ? 'bg-white shadow-sm'
-                  : 'hover:bg-slate-50'
-              }`}
+              className={`flex-1 py-3 px-4 rounded-lg transition-all ${selectedRole === 'tradesman'
+                ? 'bg-white shadow-sm'
+                : 'hover:bg-slate-50'
+                }`}
             >
               Tradesman Login
             </button>
             <button
               type="button"
               onClick={() => setSelectedRole('other')}
-              className={`flex-1 py-3 px-4 rounded-lg transition-all ${
-                selectedRole === 'other'
-                  ? 'bg-white shadow-sm'
-                  : 'hover:bg-slate-50'
-              }`}
+              className={`flex-1 py-3 px-4 rounded-lg transition-all ${selectedRole === 'other'
+                ? 'bg-white shadow-sm'
+                : 'hover:bg-slate-50'
+                }`}
             >
               Other
             </button>
           </div>
 
           {/* Login Form */}
-          <form onSubmit={handleSubmit} className="space-y-5">
+          <form onSubmit={handleLogin} className="space-y-5">
             <div>
               <Label htmlFor="name" className="text-slate-900">
                 Full Name
@@ -107,8 +120,8 @@ export function LoginPage({ onLogin }: LoginPageProps) {
               />
             </div>
 
-            <Button 
-              type="submit" 
+            <Button
+              type="submit"
               className="w-full bg-slate-900 hover:bg-slate-800 py-6 text-base"
             >
               Login as {selectedRole === 'builder' ? 'Builder' : selectedRole === 'tradesman' ? 'Tradesman' : 'Guest'}
@@ -118,12 +131,12 @@ export function LoginPage({ onLogin }: LoginPageProps) {
           {/* Sign Up Link */}
           <p className="text-center mt-6 text-slate-600">
             Don't have an account?{' '}
-            <button 
-              type="button" 
+            <button
+              type="button"
               className="text-slate-900 hover:underline"
               onClick={() => {
-                // In a real app, this would navigate to sign up
-                alert('Sign up functionality would be implemented here');
+                console.log('Sign up clicked!');
+                onNavigateToSignup();
               }}
             >
               Sign up

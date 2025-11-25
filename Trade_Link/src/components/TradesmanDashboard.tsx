@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './ui/card';
 import { Button } from './ui/button';
 import { Badge } from './ui/badge';
@@ -8,9 +8,10 @@ import { Textarea } from './ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select';
 import { Checkbox } from './ui/checkbox';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from './ui/dialog';
-import { Plus, Edit, Trash2, DollarSign, BarChart3, MessageSquare, User } from 'lucide-react';
+import { Plus, Edit, Trash2, DollarSign, BarChart3, MessageSquare, User, Loader2 } from 'lucide-react';
 import { TradeType, ServiceArea, TradeListing } from '../types';
-import { tradeTypes, serviceAreas, mockTradeListings } from '../lib/mockData';
+import { tradeTypes, serviceAreas } from '../lib/mockData';
+import { getTradeListings, createTradeListing, updateTradeListing, deleteTradeListing } from '../lib/api';
 import { toast } from 'sonner';
 
 interface TradesmanDashboardProps {
@@ -20,9 +21,8 @@ interface TradesmanDashboardProps {
 }
 
 export function TradesmanDashboard({ userName, userId, onNavigate }: TradesmanDashboardProps) {
-  const [myListings, setMyListings] = useState<TradeListing[]>(
-    mockTradeListings.filter(listing => listing.tradesmanId === userId)
-  );
+  const [myListings, setMyListings] = useState<TradeListing[]>([]);
+  const [loading, setLoading] = useState(true);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingListing, setEditingListing] = useState<TradeListing | null>(null);
 
@@ -34,6 +34,23 @@ export function TradesmanDashboard({ userName, userId, onNavigate }: TradesmanDa
   const [experience, setExperience] = useState('');
   const [description, setDescription] = useState('');
 
+  useEffect(() => {
+    fetchListings();
+  }, [userId]);
+
+  const fetchListings = async () => {
+    try {
+      setLoading(true);
+      const listings = await getTradeListings({ tradesmanId: userId });
+      setMyListings(listings);
+    } catch (error) {
+      console.error('Error fetching listings:', error);
+      toast.error('Failed to load listings');
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const handleAreaToggle = (area: ServiceArea) => {
     setSelectedAreas(prev =>
       prev.includes(area)
@@ -42,7 +59,7 @@ export function TradesmanDashboard({ userName, userId, onNavigate }: TradesmanDa
     );
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     if (!rate || !experience || selectedAreas.length === 0 || !description) {
@@ -50,31 +67,36 @@ export function TradesmanDashboard({ userName, userId, onNavigate }: TradesmanDa
       return;
     }
 
-    const listingData: TradeListing = {
-      id: editingListing?.id || Date.now().toString(),
-      tradesmanId: userId,
-      tradesmanName: userName,
-      tradeType,
-      rate: parseFloat(rate),
-      rateUnit,
-      serviceAreas: selectedAreas,
-      experience: parseInt(experience),
-      description,
-      phone: '403-555-0000',
-      email: 'user@example.com',
-      createdAt: editingListing?.createdAt || new Date(),
-    };
+    try {
+      const listingData = {
+        tradesmanId: userId,
+        tradesmanName: userName,
+        tradeType,
+        rate: parseFloat(rate),
+        rateUnit,
+        serviceAreas: selectedAreas,
+        experience: parseInt(experience),
+        description,
+        phone: '403-555-0000', // In a real app, fetch from user profile
+        email: 'user@example.com', // In a real app, fetch from user profile
+      };
 
-    if (editingListing) {
-      setMyListings(prev => prev.map(l => l.id === editingListing.id ? listingData : l));
-      toast.success('Listing updated successfully');
-    } else {
-      setMyListings(prev => [...prev, listingData]);
-      toast.success('Listing created successfully');
+      if (editingListing) {
+        const updated = await updateTradeListing(editingListing.id, listingData);
+        setMyListings(prev => prev.map(l => l.id === editingListing.id ? updated : l));
+        toast.success('Listing updated successfully');
+      } else {
+        const created = await createTradeListing(listingData);
+        setMyListings(prev => [...prev, created]);
+        toast.success('Listing created successfully');
+      }
+
+      resetForm();
+      setIsDialogOpen(false);
+    } catch (error) {
+      console.error('Error saving listing:', error);
+      toast.error('Failed to save listing');
     }
-
-    resetForm();
-    setIsDialogOpen(false);
   };
 
   const handleEdit = (listing: TradeListing) => {
@@ -88,9 +110,15 @@ export function TradesmanDashboard({ userName, userId, onNavigate }: TradesmanDa
     setIsDialogOpen(true);
   };
 
-  const handleDelete = (listingId: string) => {
-    setMyListings(prev => prev.filter(l => l.id !== listingId));
-    toast.success('Listing deleted');
+  const handleDelete = async (listingId: string) => {
+    try {
+      await deleteTradeListing(listingId);
+      setMyListings(prev => prev.filter(l => l.id !== listingId));
+      toast.success('Listing deleted');
+    } catch (error) {
+      console.error('Error deleting listing:', error);
+      toast.error('Failed to delete listing');
+    }
   };
 
   const resetForm = () => {
@@ -102,6 +130,14 @@ export function TradesmanDashboard({ userName, userId, onNavigate }: TradesmanDa
     setExperience('');
     setDescription('');
   };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-slate-50">
+        <Loader2 className="w-8 h-8 animate-spin text-orange-500" />
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-slate-50">
@@ -309,7 +345,7 @@ export function TradesmanDashboard({ userName, userId, onNavigate }: TradesmanDa
                     <div>
                       <CardTitle>{listing.tradeType}</CardTitle>
                       <CardDescription>
-                        Posted {listing.createdAt.toLocaleDateString()}
+                        Posted {new Date(listing.createdAt).toLocaleDateString()}
                       </CardDescription>
                     </div>
                     <div className="text-right">

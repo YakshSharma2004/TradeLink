@@ -1,15 +1,16 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './ui/card';
 import { Button } from './ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from './ui/tabs';
-import { ArrowLeft, TrendingUp, DollarSign, MapPin, Briefcase } from 'lucide-react';
+import { ArrowLeft, TrendingUp, DollarSign, MapPin, Briefcase, Loader2 } from 'lucide-react';
 import {
   BarChart, Bar, PieChart, Pie, Cell,
   XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer
 } from 'recharts';
-import { TradeType } from '../types';
-import { tradeTypes, serviceAreas, mockTradeListings } from '../lib/mockData';
+import { TradeType, TradeListing } from '../types';
+import { tradeTypes, serviceAreas } from '../lib/mockData';
+import { getTradeListings } from '../lib/api';
 
 interface AnalyticsDashboardProps {
   onBack: () => void;
@@ -17,59 +18,85 @@ interface AnalyticsDashboardProps {
 
 export function AnalyticsDashboard({ onBack }: AnalyticsDashboardProps) {
   const [selectedTrade, setSelectedTrade] = useState<TradeType>('Framing');
+  const [tradeListings, setTradeListings] = useState<TradeListing[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  // Calculate statistics
-  const totalListings = mockTradeListings.length;
-  const uniqueTradesmen = new Set(mockTradeListings.map(l => l.tradesmanId)).size;
-  const averageRate = Math.round(
-    mockTradeListings.reduce((sum, l) => sum + l.rate, 0) / totalListings
-  );
-  const averageExperience = Math.round(
-    mockTradeListings.reduce((sum, l) => sum + l.experience, 0) / totalListings
-  );
+  useEffect(() => {
+    async function fetchData() {
+      try {
+        const listings = await getTradeListings();
+        setTradeListings(listings);
+      } catch (err) {
+        console.error('Failed to fetch trade listings:', err);
+      } finally {
+        setLoading(false);
+      }
+    }
+    fetchData();
+  }, []);
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-slate-50 flex items-center justify-center">
+        <div className="text-center">
+          <Loader2 className="h-8 w-8 animate-spin text-blue-500 mx-auto mb-4" />
+          <p className="text-slate-600">Loading analytics...</p>
+        </div>
+      </div>
+    );
+  }
+
+  const totalListings = tradeListings.length;
+  const uniqueTradesmen = new Set(tradeListings.map(l => l.tradesmanId)).size;
+  const averageRate = totalListings > 0 ? Math.round(
+    tradeListings.reduce((sum, l) => sum + l.rate, 0) / totalListings
+  ) : 0;
+  const averageExperience = totalListings > 0 ? Math.round(
+    tradeListings.reduce((sum, l) => sum + l.experience, 0) / totalListings
+  ) : 0;
 
   // Data for charts
   const ratesByTrade = tradeTypes.map(trade => {
-    const tradeListings = mockTradeListings.filter(l => l.tradeType === trade.name);
-    const avgRate = tradeListings.length > 0
-      ? Math.round(tradeListings.reduce((sum, l) => sum + l.rate, 0) / tradeListings.length)
+    const tradeData = tradeListings.filter(l => l.tradeType === trade.name);
+    const avgRate = tradeData.length > 0
+      ? Math.round(tradeData.reduce((sum, l) => sum + l.rate, 0) / tradeData.length)
       : 0;
     return {
       trade: trade.name,
       avgRate,
-      count: tradeListings.length,
+      count: tradeData.length,
     };
   }).filter(d => d.count > 0);
 
   const ratesByArea = serviceAreas.map(area => {
-    const areaListings = mockTradeListings.filter(l => l.serviceAreas.includes(area));
-    const avgRate = areaListings.length > 0
-      ? Math.round(areaListings.reduce((sum, l) => sum + l.rate, 0) / areaListings.length)
+    const areaData = tradeListings.filter(l => l.serviceAreas.includes(area));
+    const avgRate = areaData.length > 0
+      ? Math.round(areaData.reduce((sum, l) => sum + l.rate, 0) / areaData.length)
       : 0;
     return {
       area: `${area} Calgary`,
       avgRate,
-      count: areaListings.length,
+      count: areaData.length,
     };
   });
 
   const experienceDistribution = [
-    { range: '0-5 years', count: mockTradeListings.filter(l => l.experience <= 5).length },
-    { range: '6-10 years', count: mockTradeListings.filter(l => l.experience > 5 && l.experience <= 10).length },
-    { range: '11-15 years', count: mockTradeListings.filter(l => l.experience > 10 && l.experience <= 15).length },
-    { range: '16-20 years', count: mockTradeListings.filter(l => l.experience > 15 && l.experience <= 20).length },
-    { range: '20+ years', count: mockTradeListings.filter(l => l.experience > 20).length },
+    { range: '0-5 years', count: tradeListings.filter(l => l.experience <= 5).length },
+    { range: '6-10 years', count: tradeListings.filter(l => l.experience > 5 && l.experience <= 10).length },
+    { range: '11-15 years', count: tradeListings.filter(l => l.experience > 10 && l.experience <= 15).length },
+    { range: '16-20 years', count: tradeListings.filter(l => l.experience > 15 && l.experience <= 20).length },
+    { range: '20+ years', count: tradeListings.filter(l => l.experience > 20).length },
   ].filter(d => d.count > 0);
 
   const tradeDistribution = tradeTypes.map(trade => ({
     name: trade.name,
-    value: mockTradeListings.filter(l => l.tradeType === trade.name).length,
+    value: tradeListings.filter(l => l.tradeType === trade.name).length,
   })).filter(d => d.value > 0);
 
   const COLORS = ['#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6', '#ec4899', '#06b6d4', '#84cc16'];
 
   // Detailed trade analysis
-  const tradeDetails = mockTradeListings.filter(l => l.tradeType === selectedTrade);
+  const tradeDetails = tradeListings.filter(l => l.tradeType === selectedTrade);
   const tradeAvgRate = tradeDetails.length > 0
     ? Math.round(tradeDetails.reduce((sum, l) => sum + l.rate, 0) / tradeDetails.length)
     : 0;
@@ -80,7 +107,7 @@ export function AnalyticsDashboard({ onBack }: AnalyticsDashboardProps) {
   const areaComparison = serviceAreas.map(area => {
     const areaTradeListings = tradeDetails.filter(l => l.serviceAreas.includes(area));
     return {
-      area: `${area}`,
+      area: `${area} `,
       avgRate: areaTradeListings.length > 0
         ? Math.round(areaTradeListings.reduce((sum, l) => sum + l.rate, 0) / areaTradeListings.length)
         : 0,
@@ -89,16 +116,16 @@ export function AnalyticsDashboard({ onBack }: AnalyticsDashboardProps) {
   }).filter(d => d.count > 0);
 
   return (
-    <div className="min-h-screen bg-slate-50">
+    <div className="min-h-screen bg-slate-50 animate-fade-in">
       {/* Header */}
-      <header className="bg-white border-b border-slate-200 sticky top-0 z-10">
+      <header className="bg-gradient-steel border-b border-blue-300/50 sticky top-0 z-10 shadow-steel">
         <div className="max-w-7xl mx-auto px-4 py-4">
-          <Button variant="ghost" onClick={onBack}>
+          <Button variant="secondary" className="hover-lift" onClick={onBack}>
             <ArrowLeft className="mr-2 h-4 w-4" />
             Back
           </Button>
-          <h1 className="text-3xl text-slate-900 mt-2">Market Analytics</h1>
-          <p className="text-slate-600">
+          <h1 className="text-3xl font-bold text-white drop-shadow-md mt-2">Market Analytics</h1>
+          <p className="text-white/90">
             Real-time insights into Calgary's construction trade market
           </p>
         </div>
@@ -107,23 +134,23 @@ export function AnalyticsDashboard({ onBack }: AnalyticsDashboardProps) {
       <main className="max-w-7xl mx-auto px-4 py-8">
         {/* Key Metrics */}
         <div className="grid md:grid-cols-4 gap-6 mb-8">
-          <Card>
+          <Card className="hover-lift animate-slide-up border-l-4 border-l-blue-500">
             <CardHeader className="pb-3">
               <CardDescription>Total Listings</CardDescription>
-              <CardTitle className="text-3xl">{totalListings}</CardTitle>
+              <CardTitle className="text-3xl font-bold text-blue-600">{totalListings}</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="flex items-center text-sm text-green-600">
+              <div className="flex items-center text-sm text-green-600 font-medium">
                 <TrendingUp className="h-4 w-4 mr-1" />
                 Active marketplace
               </div>
             </CardContent>
           </Card>
 
-          <Card>
+          <Card className="hover-lift animate-slide-up animate-delay-100 border-l-4 border-l-orange-500">
             <CardHeader className="pb-3">
               <CardDescription>Active Tradesmen</CardDescription>
-              <CardTitle className="text-3xl">{uniqueTradesmen}</CardTitle>
+              <CardTitle className="text-3xl font-bold text-orange-600">{uniqueTradesmen}</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="flex items-center text-sm text-slate-600">
@@ -133,10 +160,10 @@ export function AnalyticsDashboard({ onBack }: AnalyticsDashboardProps) {
             </CardContent>
           </Card>
 
-          <Card>
+          <Card className="hover-lift animate-slide-up animate-delay-200 border-l-4 border-l-green-500">
             <CardHeader className="pb-3">
               <CardDescription>Average Rate</CardDescription>
-              <CardTitle className="text-3xl">${averageRate}</CardTitle>
+              <CardTitle className="text-3xl font-bold text-green-600">${averageRate}</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="flex items-center text-sm text-slate-600">
@@ -146,10 +173,10 @@ export function AnalyticsDashboard({ onBack }: AnalyticsDashboardProps) {
             </CardContent>
           </Card>
 
-          <Card>
+          <Card className="hover-lift animate-slide-up animate-delay-300 border-l-4 border-l-purple-500">
             <CardHeader className="pb-3">
               <CardDescription>Avg Experience</CardDescription>
-              <CardTitle className="text-3xl">{averageExperience}y</CardTitle>
+              <CardTitle className="text-3xl font-bold text-purple-600">{averageExperience}y</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="flex items-center text-sm text-slate-600">
@@ -250,7 +277,7 @@ export function AnalyticsDashboard({ onBack }: AnalyticsDashboardProps) {
                         dataKey="value"
                       >
                         {tradeDistribution.map((_, index) => (
-                          <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                          <Cell key={`cell - ${index} `} fill={COLORS[index % COLORS.length]} />
                         ))}
                       </Pie>
                       <Tooltip />
