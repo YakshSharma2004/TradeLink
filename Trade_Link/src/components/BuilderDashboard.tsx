@@ -40,22 +40,22 @@ export function BuilderDashboard({ onSelectTrade, onNavigate, userName }: Builde
   }, []);
 
   const tradeCards = [
-    { name: 'Demolition' as TradeType, icon: Hammer, color: 'bg-red-500' },
-    { name: 'Foundation Grader' as TradeType, icon: TrendingDown, color: 'bg-amber-600' },
-    { name: 'Foundation Pouring' as TradeType, icon: Layers, color: 'bg-stone-600' },
-    { name: 'Framing' as TradeType, icon: Home, color: 'bg-yellow-600' },
-    { name: 'Plumber' as TradeType, icon: Droplet, color: 'bg-blue-500' },
-    { name: 'Electrician' as TradeType, icon: Zap, color: 'bg-yellow-500' },
-    { name: 'Heating' as TradeType, icon: Flame, color: 'bg-orange-500' },
-    { name: 'Roofing' as TradeType, icon: Triangle, color: 'bg-slate-700' },
-    { name: 'Drywall' as TradeType, icon: Square, color: 'bg-gray-400' },
-    { name: 'Siding' as TradeType, icon: Warehouse, color: 'bg-indigo-500' },
-    { name: 'Finisher' as TradeType, icon: Sparkles, color: 'bg-purple-500' },
-    { name: 'Tile/Floor' as TradeType, icon: Grid3x3, color: 'bg-teal-500' },
-    { name: 'Counter' as TradeType, icon: RectangleHorizontal, color: 'bg-cyan-600' },
-    { name: 'Fireplace' as TradeType, icon: Flame, color: 'bg-red-600' },
-    { name: 'Door and Window' as TradeType, icon: DoorClosed, color: 'bg-blue-600' },
-    { name: 'Lumber' as TradeType, icon: Trees, color: 'bg-green-700' },
+    { name: 'Demolition' as TradeType, icon: Hammer, color: 'bg-gray-800' },
+    { name: 'Foundation Grader' as TradeType, icon: TrendingDown, color: 'bg-gray-700' },
+    { name: 'Foundation Pouring' as TradeType, icon: Layers, color: 'bg-gray-600' },
+    { name: 'Framing' as TradeType, icon: Home, color: 'bg-gray-800' },
+    { name: 'Plumber' as TradeType, icon: Droplet, color: 'bg-gray-700' },
+    { name: 'Electrician' as TradeType, icon: Zap, color: 'bg-gray-600' },
+    { name: 'Heating' as TradeType, icon: Flame, color: 'bg-gray-800' },
+    { name: 'Roofing' as TradeType, icon: Triangle, color: 'bg-gray-700' },
+    { name: 'Drywall' as TradeType, icon: Square, color: 'bg-gray-600' },
+    { name: 'Siding' as TradeType, icon: Warehouse, color: 'bg-gray-800' },
+    { name: 'Finisher' as TradeType, icon: Sparkles, color: 'bg-gray-700' },
+    { name: 'Tile/Floor' as TradeType, icon: Grid3x3, color: 'bg-gray-600' },
+    { name: 'Counter' as TradeType, icon: RectangleHorizontal, color: 'bg-gray-800' },
+    { name: 'Fireplace' as TradeType, icon: Flame, color: 'bg-gray-700' },
+    { name: 'Door and Window' as TradeType, icon: DoorClosed, color: 'bg-gray-600' },
+    { name: 'Lumber' as TradeType, icon: Trees, color: 'bg-gray-800' },
   ];
 
   const getTradeCount = (tradeName: TradeType) => {
@@ -87,7 +87,7 @@ export function BuilderDashboard({ onSelectTrade, onNavigate, userName }: Builde
   return (
     <div className="min-h-screen bg-slate-50 animate-fade-in">
       {/* Header */}
-      <header className="bg-gradient-construction border-b border-white/10 sticky top-0 z-10 shadow-lg shadow-blue-900/20">
+      <header className="bg-gradient-construction border-b border-white/10 sticky top-0 z-10 shadow-lg shadow-gray-900/10">
         <div className="max-w-7xl mx-auto px-4 py-4 flex items-center justify-between">
           <div>
             <h1 className="text-3xl font-bold text-white drop-shadow-md">Trade Link</h1>
@@ -128,7 +128,7 @@ export function BuilderDashboard({ onSelectTrade, onNavigate, userName }: Builde
             return (
               <Card
                 key={trade.name}
-                className={`cursor-pointer hover-lift hover-glow transition-all duration-300 animate-slide-up ${delayClass} border-l-4 border-l-transparent hover:border-l-orange-500`}
+                className={`cursor-pointer hover-lift hover-glow transition-all duration-300 animate-slide-up ${delayClass} border-l-4 border-l-transparent hover:border-l-gray-500`}
                 onClick={() => onSelectTrade(trade.name)}
               >
                 <CardHeader className="pb-3">

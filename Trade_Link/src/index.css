@@ -2697,35 +2697,35 @@ html {
 /* Custom TradeLink Theme - Construction Colors */
 @layer theme {
   :root {
-    /* Modern Professional Palette - Deep Blue & Gold */
-    --color-primary-blue: 222 47% 11%; /* #0F172A - Deep Navy */
-    --color-accent-gold: 45 93% 47%; /* #F59E0B - Rich Amber */
-    --color-secondary-teal: 189 94% 43%; /* #06B6D4 - Cyan */
-    --color-neutral-slate: 215 16% 47%; /* #64748B - Slate */
-    --color-success-green: 142 71% 45%; /* #22C55E - Green */
+    /* Monochrome Palette - Black & White */
+    --color-black: 0 0% 0%; /* #000000 */
+    --color-white: 0 0% 100%; /* #FFFFFF */
+    --color-gray-100: 0 0% 96%; /* #F3F4F6 */
+    --color-gray-200: 0 0% 90%; /* #E5E7EB */
+    --color-gray-800: 0 0% 12%; /* #1F2937 */
     
-    /* Enhanced gradients */
-    --gradient-construction: linear-gradient(135deg, hsl(var(--color-primary-blue)) 0%, hsl(217 33% 17%) 100%);
-    --gradient-steel: linear-gradient(135deg, hsl(215 25% 27%) 0%, hsl(217 33% 17%) 100%);
-    --gradient-warm: linear-gradient(135deg, hsl(var(--color-accent-gold)) 0%, hsl(38 92% 50%) 100%);
+    /* Gradients - Grayscale */
+    --gradient-construction: linear-gradient(135deg, hsl(0 0% 10%) 0%, hsl(0 0% 0%) 100%);
+    --gradient-steel: linear-gradient(135deg, hsl(0 0% 20%) 0%, hsl(0 0% 10%) 100%);
+    --gradient-warm: linear-gradient(135deg, hsl(0 0% 30%) 0%, hsl(0 0% 15%) 100%);
     
     /* Primary brand color */
-    --primary: var(--color-primary-blue);
-    --primary-foreground: 0 0% 100%;
+    --primary: var(--color-black);
+    --primary-foreground: var(--color-white);
     
     /* Accent color */
-    --accent: var(--color-accent-gold);
-    --accent-foreground: 0 0% 100%;
+    --accent: var(--color-gray-800);
+    --accent-foreground: var(--color-white);
 
-    /* Shadow for depth */
-    --shadow-construction: 0 10px 15px -3px rgba(15, 23, 42, 0.1), 0 4px 6px -2px rgba(15, 23, 42, 0.05);
+    /* Shadow for depth - Subtle Gray */
+    --shadow-construction: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
   }
 
   .dark {
-    --primary: var(--color-primary-blue);
-    --primary-foreground: 0 0% 100%;
-    --accent: var(--color-accent-gold);
-    --accent-foreground: 0 0% 100%;
+    --primary: var(--color-white);
+    --primary-foreground: var(--color-black);
+    --accent: var(--color-gray-200);
+    --accent-foreground: var(--color-black);
   }
 }
 
@@ -2866,10 +2866,10 @@ html {
 
   /* Enhanced shadows */
   .shadow-construction {
-    box-shadow: 0 4px 14px 0 rgba(255, 107, 53, 0.15);
+    box-shadow: 0 4px 14px 0 rgba(0, 0, 0, 0.1);
   }
 
   .shadow-steel {
-    box-shadow: 0 4px 14px 0 rgba(0, 78, 137, 0.15);
+    box-shadow: 0 4px 14px 0 rgba(0, 0, 0, 0.1);
   }
 }

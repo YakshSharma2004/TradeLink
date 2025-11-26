@@ -39,7 +39,7 @@ export function SignUpPage({ onSignup, onBackToLogin }: SignUpPageProps) {
                     {/* Header */}
                     <div className="mb-8">
                         <div className="flex items-center gap-3 mb-4">
-                            <div className="w-12 h-12 bg-gradient-construction rounded-xl flex items-center justify-center shadow-lg shadow-blue-900/20">
+                            <div className="w-12 h-12 bg-gradient-construction rounded-xl flex items-center justify-center shadow-lg shadow-gray-900/10">
                                 <Hammer className="w-6 h-6 text-white" />
                             </div>
                             <h1 className="text-3xl font-bold text-slate-900 tracking-tight">Create Account</h1>
