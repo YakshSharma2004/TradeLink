@@ -7,7 +7,7 @@ import { UserRole } from '../types';
 import { login } from '../lib/api';
 
 interface LoginPageProps {
-  onLogin: (role: UserRole, email: string, name: string) => void;
+  onLogin: (role: UserRole, email: string, name: string, id?: string) => void;
   onNavigateToSignup: () => void;
 }
 
@@ -23,13 +23,13 @@ export function LoginPage({ onLogin, onNavigateToSignup }: LoginPageProps) {
 
     try {
       // Call the API to verify user exists and matches role
-      const user = await login({ email, role: selectedRole });
+      const user = await login({ email, role: selectedRole, name });
 
       // Store user in localStorage
       localStorage.setItem('user', JSON.stringify(user));
 
       // Call parent's onLogin with the data from API
-      onLogin(user.role, user.email, user.name);
+      onLogin(user.role, user.email, user.name, user.id);
     } catch (err) {
       console.error('Login failed:', err);
       alert('Login failed. User not found.');

@@ -41,8 +41,8 @@ export default function App() {
     chatRecipient: null,
   });
 
-  const handleLogin = (role: UserRole, email: string, name: string) => {
-    const userId = Date.now().toString();
+  const handleLogin = (role: UserRole, email: string, name: string, id?: string) => {
+    const userId = id || Date.now().toString();
     setState({
       view: role === 'builder'
         ? 'builder-dashboard'
@@ -126,6 +126,7 @@ export default function App() {
         <TradesmanDashboard
           userName={state.user.name}
           userId={state.user.id}
+          userEmail={state.user.email}
           onNavigate={handleNavigate}
         />
         <Toaster />

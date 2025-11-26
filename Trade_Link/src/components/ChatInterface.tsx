@@ -140,7 +140,11 @@ export function ChatInterface({
         (newMessage.senderId === selectedConversation && newMessage.receiverId === currentUserId) ||
         (newMessage.senderId === currentUserId && newMessage.receiverId === selectedConversation)
       ) {
-        setMessages((prev) => [...prev, newMessage]);
+        setMessages((prev) => {
+          if (prev.some(m => m.id === newMessage.id)) return prev;
+          return [...prev, newMessage];
+        });
+
         // Mark as read immediately if we are viewing this conversation
         if (newMessage.receiverId === currentUserId) {
           markMessageAsRead(newMessage.id).catch(console.error);
@@ -225,7 +229,10 @@ export function ChatInterface({
 
       // Let's use the API response to add it to the list
       const newMessage = { ...savedMessage, timestamp: new Date(savedMessage.timestamp) };
-      setMessages(prev => [...prev, newMessage]);
+      setMessages(prev => {
+        if (prev.some(m => m.id === newMessage.id)) return prev;
+        return [...prev, newMessage];
+      });
       setMessageInput('');
 
       // Also update conversation list

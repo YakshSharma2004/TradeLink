@@ -7,12 +7,13 @@ const router = express.Router();
 // GET /api/trade-listings
 router.get('/', async (req, res) => {
   try {
-    const { tradeType, area, minRate, maxRate, tradesmanId } = req.query;
+    const { tradeType, area, minRate, maxRate, tradesmanId, email } = req.query;
 
     const filter = {};
 
     if (tradeType) filter.tradeType = tradeType;
     if (tradesmanId) filter.tradesmanId = tradesmanId;
+    if (email) filter.email = email;
     if (area) filter.serviceAreas = area; // matches docs where array contains this area
 
     if (minRate || maxRate) {

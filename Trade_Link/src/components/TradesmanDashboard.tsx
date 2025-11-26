@@ -17,10 +17,11 @@ import { toast } from 'sonner';
 interface TradesmanDashboardProps {
   userName: string;
   userId: string;
+  userEmail: string;
   onNavigate: (view: 'analytics' | 'chat' | 'profile') => void;
 }
 
-export function TradesmanDashboard({ userName, userId, onNavigate }: TradesmanDashboardProps) {
+export function TradesmanDashboard({ userName, userId, userEmail, onNavigate }: TradesmanDashboardProps) {
   const [myListings, setMyListings] = useState<TradeListing[]>([]);
   const [loading, setLoading] = useState(true);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
@@ -41,7 +42,8 @@ export function TradesmanDashboard({ userName, userId, onNavigate }: TradesmanDa
   const fetchListings = async () => {
     try {
       setLoading(true);
-      const listings = await getTradeListings({ tradesmanId: userId });
+      // Fetch by ID OR Email (backend handles logic, we pass both if available)
+      const listings = await getTradeListings({ tradesmanId: userId, email: userEmail });
       setMyListings(listings);
     } catch (error) {
       console.error('Error fetching listings:', error);
@@ -78,7 +80,7 @@ export function TradesmanDashboard({ userName, userId, onNavigate }: TradesmanDa
         experience: parseInt(experience),
         description,
         phone: '403-555-0000', // In a real app, fetch from user profile
-        email: 'user@example.com', // In a real app, fetch from user profile
+        email: userEmail,
       };
 
       if (editingListing) {

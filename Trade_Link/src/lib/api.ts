@@ -72,6 +72,7 @@ export interface TradeListingFilters {
     minRate?: number;
     maxRate?: number;
     tradesmanId?: string;
+    email?: string;
 }
 
 export async function getTradeListings(filters?: TradeListingFilters): Promise<TradeListing[]> {
@@ -81,6 +82,7 @@ export async function getTradeListings(filters?: TradeListingFilters): Promise<T
     if (filters?.minRate !== undefined) params.append('minRate', filters.minRate.toString());
     if (filters?.maxRate !== undefined) params.append('maxRate', filters.maxRate.toString());
     if (filters?.tradesmanId) params.append('tradesmanId', filters.tradesmanId);
+    if (filters?.email) params.append('email', filters.email);
 
     const query = params.toString() ? `?${params.toString()}` : '';
     return fetchAPI<TradeListing[]>(`/trade-listings${query}`);
@@ -155,6 +157,7 @@ export async function markMessageAsRead(messageId: string): Promise<Message> {
 export interface LoginData {
     email: string;
     role: string;
+    name: string;
 }
 
 export interface SignUpData {

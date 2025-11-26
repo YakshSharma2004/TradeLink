@@ -31,15 +31,20 @@ router.post('/signup', async (req, res) => {
 // POST /api/auth/login
 router.post('/login', async (req, res) => {
   try {
-    const { email, role } = req.body;
-    console.log(`Login attempt for email: ${email}, role: ${role}`);
+    const { email, role, name } = req.body;
+    console.log(`Login attempt for email: ${email}, role: ${role}, name: ${name}`);
     
-    // Efficiently check both email and role in the database query
-    const user = await User.findOne({ email, role });
+    // Explicitly validate that name is provided
+    if (!name) {
+      return res.status(400).json({ error: 'Name is required' });
+    }
+
+    // Efficiently check email, role AND name in the database query
+    const user = await User.findOne({ email, role, name });
     console.log('User found:', user ? 'Yes' : 'No');
     
     if (!user) {
-      return res.status(404).json({ error: 'User not found or role does not match' });
+      return res.status(404).json({ error: 'User not found or details do not match' });
     }
     
     res.json({
