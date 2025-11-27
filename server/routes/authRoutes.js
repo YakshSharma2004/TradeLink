@@ -5,7 +5,7 @@ const router = express.Router();
 // POST /api/auth/signup
 router.post('/signup', async (req, res) => {
     try {
-        const { name, email, phone, role } = req.body;
+        const { name, email, phone, role, password } = req.body;
         
         // Check if user already exists
         const existingUser = await User.findOne({ email });
@@ -13,7 +13,7 @@ router.post('/signup', async (req, res) => {
             return res.status(400).json({ error: 'Email is already registered' });
         }
         
-        const user = new User({ name, email, phone, role });
+        const user = new User({ name, email, phone, role, password });
         await user.save();
         
         return res.status(201).json({
@@ -31,16 +31,11 @@ router.post('/signup', async (req, res) => {
 // POST /api/auth/login
 router.post('/login', async (req, res) => {
   try {
-    const { email, role, name } = req.body;
-    console.log(`Login attempt for email: ${email}, role: ${role}, name: ${name}`);
+    const { email, role, password } = req.body;
+    console.log(`Login attempt for email: ${email}, role: ${role}`);
     
-    // Explicitly validate that name is provided
-    if (!name) {
-      return res.status(400).json({ error: 'Name is required' });
-    }
-
-    // Efficiently check email, role AND name in the database query
-    const user = await User.findOne({ email, role, name });
+    // Efficiently check email, role AND password in the database query
+    const user = await User.findOne({ email, role, password });
     console.log('User found:', user ? 'Yes' : 'No');
     
     if (!user) {

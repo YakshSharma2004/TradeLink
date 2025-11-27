@@ -278,9 +278,13 @@ export function ChatInterface({
   }
 
   return (
-    <div className="min-h-screen bg-slate-50">
+    // FIX 1: Change min-h-screen to h-screen and add flex-col/overflow-hidden
+    // This locks the browser window so ONLY the inside panels scroll.
+    <div className="fixed inset-0 z-50 flex flex-col bg-slate-50 overflow-hidden">
+
       {/* Header */}
-      <header className="bg-white border-b border-slate-200 sticky top-0 z-10">
+      {/* Remove sticky/z-index, just let it sit at the top naturally */}
+      <header className="bg-white border-b border-slate-200 flex-none">
         <div className="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
           <div className="flex items-center">
             <Button variant="ghost" onClick={onBack}>
@@ -296,11 +300,10 @@ export function ChatInterface({
         </div>
       </header>
 
-      <main className="max-w-7xl mx-auto px-4 py-8">
-        <div className="grid lg:grid-cols-3 gap-6 h-[calc(100vh-16rem)]">
-          {/* Conversations List */}
-          <Card className="lg:col-span-1">
-            <CardHeader>
+      <main className="flex-1 max-w-7xl mx-auto w-full p-4 h-[calc(100vh-80px)]">
+        <div className="grid lg:grid-cols-3 gap-6 h-full">
+          <Card className="lg:col-span-1 h-full flex flex-col overflow-hidden border-slate-200 shadow-sm">
+            <CardHeader className="shrink-0">
               <CardTitle>Conversations</CardTitle>
               <div className="relative mt-2">
                 <Search className="absolute left-2 top-2.5 h-4 w-4 text-slate-500" />
@@ -312,45 +315,50 @@ export function ChatInterface({
                 />
               </div>
             </CardHeader>
-            <CardContent className="p-0">
-              <ScrollArea className="h-[calc(100vh-24rem)]">
+            <CardContent className="p-0 flex-1 min-h-0 flex flex-col">
+              <ScrollArea className="h-full">
                 {filteredConversations.length === 0 ? (
-                  <div className="p-4 text-center text-slate-600">
+                  <div className="p-8 text-center text-slate-500 text-sm">
                     No conversations found
                   </div>
                 ) : (
-                  <div>
-                    {filteredConversations.map(conv => (
+                  <div className="flex flex-col">
+                    {filteredConversations.map((conv) => (
                       <div
                         key={conv.userId}
-                        className={`p-4 border-b border-slate-200 cursor-pointer hover:bg-slate-50 transition-colors ${selectedConversation === conv.userId ? 'bg-slate-100' : ''
-                          }`}
                         onClick={() => setSelectedConversation(conv.userId)}
+                        className={`
+                          relative p-4 border-b border-slate-100 cursor-pointer transition-all
+                          hover:bg-slate-50
+                          ${selectedConversation === conv.userId
+                            ? 'bg-blue-50/50 border-l-4 border-l-blue-600'
+                            : 'border-l-4 border-l-transparent pl-4'
+                          }`}
                       >
                         <div className="flex items-start gap-3">
-                          <Avatar>
-                            <AvatarFallback>
-                              {conv.userName.split(' ').map(n => n[0]).join('')}
+                          <Avatar className="h-10 w-10 border border-slate-200">
+                            <AvatarFallback className="bg-slate-200 text-slate-600 font-medium text-xs">
+                              {conv.userName.split(" ").map((n) => n[0]).join("").toUpperCase().slice(0, 2)}
                             </AvatarFallback>
                           </Avatar>
-                          <div className="flex-1 min-w-0">
-                            <div className="flex items-center justify-between mb-1">
-                              <p className="truncate font-medium">{conv.userName}</p>
+                          <div className="flex-1 min-w-0 overflow-hidden">
+                            <div className="flex items-center justify-between mb-0.5">
+                              <p className="truncate text-sm font-semibold text-slate-900">{conv.userName}</p>
+                              <span className="text-[10px] text-slate-400 whitespace-nowrap ml-2">
+                                {new Date(conv.lastMessageTime).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
+                              </span>
+                            </div>
+                            <div className="flex items-center justify-between gap-2">
+                              <p className="truncate text-xs text-slate-500 w-full">{conv.lastMessage}</p>
                               {conv.unreadCount > 0 && (
-                                <span className="bg-blue-500 text-white text-xs px-2 py-1 rounded-full">
+                                <span className="flex-none flex h-5 w-5 items-center justify-center rounded-full bg-blue-600 text-[10px] font-bold text-white shadow-sm">
                                   {conv.unreadCount}
                                 </span>
                               )}
                             </div>
-                            <p className="text-sm text-slate-600 truncate">{conv.lastMessage}</p>
-                            <p className="text-xs text-slate-500 mt-1">
-                              {new Date(conv.lastMessageTime).toLocaleTimeString([], {
-                                hour: '2-digit',
-                                minute: '2-digit'
-                              })}
-                            </p>
                           </div>
                         </div>
+
                       </div>
                     ))}
                   </div>
@@ -359,11 +367,10 @@ export function ChatInterface({
             </CardContent>
           </Card>
 
-          {/* Chat Area */}
-          <Card className="lg:col-span-2 flex flex-col">
+          <Card className="lg:col-span-2 flex flex-col h-full overflow-hidden border-slate-200 shadow-sm">
             {selectedConversation ? (
               <>
-                <CardHeader className="border-b border-slate-200">
+                <CardHeader className="border-b border-slate-200 shrink-0">
                   <div className="flex items-center gap-3">
                     <Avatar>
                       <AvatarFallback>
@@ -372,14 +379,13 @@ export function ChatInterface({
                     </Avatar>
                     <div>
                       <CardTitle>{selectedUser?.userName || 'Unknown'}</CardTitle>
-                      {/* <p className="text-sm text-slate-600">{selectedUser?.role}</p> */}
                     </div>
                   </div>
                 </CardHeader>
 
-                <CardContent className="flex-1 p-4 overflow-hidden flex flex-col">
-                  <ScrollArea className="flex-1 pr-4">
-                    <div className="space-y-4">
+                <CardContent className="flex-1 p-4 overflow-hidden flex flex-col min-h-0 bg-slate-50/50">
+                  <ScrollArea className="flex-1 pr-4 h-full">
+                    <div className="space-y-4 pb-4"> {/* Added pb-4 for spacing at bottom */}
                       {messages.map(message => {
                         const isSent = message.senderId === currentUserId;
                         return (
@@ -388,14 +394,14 @@ export function ChatInterface({
                             className={`flex ${isSent ? 'justify-end' : 'justify-start'}`}
                           >
                             <div
-                              className={`max-w-[70%] rounded-lg p-3 ${isSent
-                                ? 'bg-blue-500 text-white'
-                                : 'bg-slate-200 text-slate-900'
+                              className={`max-w-[75%] rounded-2xl px-4 py-2 shadow-sm ${isSent
+                                ? 'bg-blue-600 text-white rounded-br-none'
+                                : 'bg-white text-slate-900 border border-slate-200 rounded-bl-none'
                                 }`}
                             >
-                              <p className="break-words">{message.message}</p>
+                              <p className="break-words text-sm">{message.message}</p>
                               <p
-                                className={`text-xs mt-1 ${isSent ? 'text-blue-100' : 'text-slate-600'
+                                className={`text-[10px] mt-1 text-right ${isSent ? 'text-blue-100' : 'text-slate-400'
                                   }`}
                               >
                                 {message.timestamp.toLocaleTimeString([], {
@@ -411,22 +417,22 @@ export function ChatInterface({
                     </div>
                   </ScrollArea>
 
-                  <form onSubmit={handleSendMessage} className="flex gap-2 mt-4">
+                  <form onSubmit={handleSendMessage} className="flex gap-2 mt-4 pt-2">
                     <Input
                       placeholder="Type a message..."
                       value={messageInput}
                       onChange={(e) => setMessageInput(e.target.value)}
-                      className="flex-1"
+                      className="flex-1 bg-white"
                     />
-                    <Button type="submit" disabled={!messageInput.trim()}>
+                    <Button type="submit" disabled={!messageInput.trim()} className="bg-blue-600 hover:bg-blue-700">
                       <Send className="h-4 w-4" />
                     </Button>
                   </form>
                 </CardContent>
               </>
             ) : (
-              <CardContent className="flex items-center justify-center h-full">
-                <div className="text-center text-slate-600">
+              <CardContent className="flex items-center justify-center h-full bg-slate-50/30">
+                <div className="text-center text-slate-500">
                   <p>Select a conversation to start messaging</p>
                 </div>
               </CardContent>

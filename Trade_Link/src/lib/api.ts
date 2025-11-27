@@ -1,4 +1,4 @@
-import { User, TradeListing, Message } from '../types';
+import { User, TradeListing, Message, UserRole } from '../types';
 
 const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001/api';
 
@@ -156,15 +156,17 @@ export async function markMessageAsRead(messageId: string): Promise<Message> {
 
 export interface LoginData {
     email: string;
-    role: string;
-    name: string;
+    role: UserRole;
+    name?: string;
+    password?: string;
 }
 
 export interface SignUpData {
     email: string;
     name: string;
-    role: 'builder' | 'tradesman' | 'other';
+    role: UserRole;
     phone?: string;
+    password?: string;
 }
 
 export async function login(loginData: LoginData): Promise<User> {

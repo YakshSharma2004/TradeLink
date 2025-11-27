@@ -2825,51 +2825,5 @@ html {
     animation-delay: 400ms;
   }
 
-  /* Hover Effects */
-  .hover-lift {
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  }
 
-  .hover-lift:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 12px 24px -8px rgba(0, 0, 0, 0.15);
-  }
-
-  .hover-scale {
-    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  }
-
-  .hover-scale:hover {
-    transform: scale(1.02);
-  }
-
-  .hover-glow {
-    transition: box-shadow 0.3s ease;
-  }
-
-  .hover-glow:hover {
-    box-shadow: 0 0 20px rgba(255, 107, 53, 0.4);
-  }
-
-  /* Gradient backgrounds */
-  .bg-gradient-construction {
-    background: var(--gradient-construction);
-  }
-
-  .bg-gradient-steel {
-    background: var(--gradient-steel);
-  }
-
-  .bg-gradient-warm {
-    background: var(--gradient-warm);
-  }
-
-  /* Enhanced shadows */
-  .shadow-construction {
-    box-shadow: 0 4px 14px 0 rgba(0, 0, 0, 0.1);
-  }
-
-  .shadow-steel {
-    box-shadow: 0 4px 14px 0 rgba(0, 0, 0, 0.1);
-  }
 }
