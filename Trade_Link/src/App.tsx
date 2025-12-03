@@ -1,4 +1,5 @@
-import { useState } from 'react';
+import { useState, useEffect, JSX } from 'react';
+import { Routes, Route, useNavigate, Navigate, useLocation } from 'react-router-dom';
 import { LoginPage } from './components/LoginPage';
 import { SignUpPage } from './components/SignUpPage';
 import { BuilderDashboard } from './components/BuilderDashboard';
@@ -10,19 +11,7 @@ import { ProfileView } from './components/ProfileView';
 import { Toaster } from './components/ui/sonner';
 import { UserRole, TradeType } from './types';
 
-type View =
-  | 'login'
-  | 'signup'
-  | 'builder-dashboard'
-  | 'tradesman-dashboard'
-  | 'other-dashboard'
-  | 'trade-listings'
-  | 'chat'
-  | 'analytics'
-  | 'profile';
-
 interface AppState {
-  view: View;
   user: {
     id: string;
     name: string;
@@ -34,8 +23,9 @@ interface AppState {
 }
 
 export default function App() {
+  const navigate = useNavigate();
+  const location = useLocation();
   const [state, setState] = useState<AppState>({
-    view: 'login',
     user: null,
     selectedTrade: null,
     chatRecipient: null,
@@ -43,161 +33,145 @@ export default function App() {
 
   const handleLogin = (role: UserRole, email: string, name: string, id?: string) => {
     const userId = id || Date.now().toString();
-    setState({
-      view: role === 'builder'
-        ? 'builder-dashboard'
-        : role === 'tradesman'
-          ? 'tradesman-dashboard'
-          : 'other-dashboard',
+    setState(prev => ({
+      ...prev,
       user: { id: userId, name, email, role },
-      selectedTrade: null,
-      chatRecipient: null,
-    });
+    }));
+
+    if (role === 'builder') {
+      navigate('/dashboard');
+    } else if (role === 'tradesman') {
+      navigate('/dashboard');
+    } else {
+      navigate('/dashboard');
+    }
   };
 
   const handleSignup = (role: UserRole, email: string, name: string, phone?: string) => {
     // For now, just log them in after signup
-    // In production, this would call the API first
     handleLogin(role, email, name);
   };
 
   const handleSelectTrade = (trade: TradeType) => {
-    setState(prev => ({ ...prev, view: 'trade-listings', selectedTrade: trade }));
+    setState(prev => ({ ...prev, selectedTrade: trade }));
+    navigate('/trade-listings');
   };
 
   const handleOpenChat = (recipientId: string, recipientName: string) => {
     setState(prev => ({
       ...prev,
-      view: 'chat',
       chatRecipient: { id: recipientId, name: recipientName }
     }));
+    navigate('/chat');
   };
 
   const handleNavigate = (view: 'analytics' | 'chat' | 'profile') => {
-    setState(prev => ({ ...prev, view }));
+    navigate(`/${view}`);
   };
 
   const handleBackToDashboard = () => {
-    if (!state.user) return;
-
-    setState(prev => ({
-      ...prev,
-      view: state.user?.role === 'builder'
-        ? 'builder-dashboard'
-        : state.user?.role === 'tradesman'
-          ? 'tradesman-dashboard'
-          : 'other-dashboard',
-      selectedTrade: null,
-      chatRecipient: null,
-    }));
+    navigate('/dashboard');
   };
 
-  // Render based on current view
-  console.log('Current view:', state.view);
+  // Protected Route Wrapper
+  const ProtectedRoute = ({ children }: { children: JSX.Element }) => {
+    if (!state.user) {
+      return <Navigate to="/login" replace />;
+    }
+    return children;
+  };
 
-  // Check signup FIRST before checking login/user
-  if (state.view === 'signup') {
-    return <SignUpPage onSignup={handleSignup} onBackToLogin={() => setState(prev => ({ ...prev, view: 'login' }))} />;
-  }
+  return (
+    <>
+      <Routes>
+        <Route path="/login" element={
+          !state.user ? (
+            <LoginPage
+              onLogin={handleLogin}
+              onNavigateToSignup={() => navigate('/signup')}
+            />
+          ) : (
+            <Navigate to="/dashboard" replace />
+          )
+        } />
 
-  if (state.view === 'login' || !state.user) {
-    return <LoginPage onLogin={handleLogin} onNavigateToSignup={() => {
-      console.log('Navigating to signup...');
-      setState(prev => ({ ...prev, view: 'signup' }));
-    }} />;
-  }
+        <Route path="/signup" element={
+          !state.user ? (
+            <SignUpPage
+              onSignup={handleSignup}
+              onBackToLogin={() => navigate('/login')}
+            />
+          ) : (
+            <Navigate to="/dashboard" replace />
+          )
+        } />
 
-  if (state.view === 'builder-dashboard') {
-    return (
-      <>
-        <BuilderDashboard
-          onSelectTrade={handleSelectTrade}
-          onNavigate={handleNavigate}
-          userName={state.user.name}
-        />
-        <Toaster />
-      </>
-    );
-  }
+        <Route path="/dashboard" element={
+          <ProtectedRoute>
+            {state.user?.role === 'tradesman' ? (
+              <TradesmanDashboard
+                userName={state.user.name}
+                userId={state.user.id}
+                userEmail={state.user.email}
+                onNavigate={handleNavigate}
+              />
+            ) : (
+              <BuilderDashboard
+                onSelectTrade={handleSelectTrade}
+                onNavigate={handleNavigate}
+                userName={state.user?.name || ''}
+              />
+            )}
+          </ProtectedRoute>
+        } />
 
-  if (state.view === 'tradesman-dashboard') {
-    return (
-      <>
-        <TradesmanDashboard
-          userName={state.user.name}
-          userId={state.user.id}
-          userEmail={state.user.email}
-          onNavigate={handleNavigate}
-        />
-        <Toaster />
-      </>
-    );
-  }
+        <Route path="/trade-listings" element={
+          <ProtectedRoute>
+            {state.selectedTrade ? (
+              <TradeListingsView
+                tradeType={state.selectedTrade}
+                onBack={handleBackToDashboard}
+                onOpenChat={handleOpenChat}
+              />
+            ) : (
+              <Navigate to="/dashboard" replace />
+            )}
+          </ProtectedRoute>
+        } />
+        <Route path="/chat" element={
+          <ProtectedRoute>
+            <ChatInterface
+              currentUserId={state.user?.id || ''}
+              currentUserName={state.user?.name || ''}
+              onBack={handleBackToDashboard}
+              initialRecipientId={state.chatRecipient?.id}
+              initialRecipientName={state.chatRecipient?.name}
+            />
+          </ProtectedRoute>
+        } />
 
-  if (state.view === 'other-dashboard') {
-    return (
-      <>
-        <BuilderDashboard
-          onSelectTrade={handleSelectTrade}
-          onNavigate={handleNavigate}
-          userName={state.user.name}
-        />
-        <Toaster />
-      </>
-    );
-  }
+        <Route path="/analytics" element={
+          <ProtectedRoute>
+            <AnalyticsDashboard onBack={handleBackToDashboard} />
+          </ProtectedRoute>
+        } />
 
-  if (state.view === 'trade-listings' && state.selectedTrade) {
-    return (
-      <>
-        <TradeListingsView
-          tradeType={state.selectedTrade}
-          onBack={handleBackToDashboard}
+        <Route path="/profile" element={
+          <ProtectedRoute>
+            <ProfileView
+              userName={state.user?.name || ''}
+              userEmail={state.user?.email || ''}
+              userRole={state.user?.role || 'builder'}
+              userId={state.user?.id || ''}
+              onBack={handleBackToDashboard}
+            />
+          </ProtectedRoute>
+        } />
 
-          onOpenChat={handleOpenChat}
-        />
-        <Toaster />
-      </>
-    );
-  }
-
-  if (state.view === 'chat') {
-    return (
-      <>
-        <ChatInterface
-          currentUserId={state.user.id}
-          currentUserName={state.user.name}
-          onBack={handleBackToDashboard}
-          initialRecipientId={state.chatRecipient?.id}
-          initialRecipientName={state.chatRecipient?.name}
-        />
-        <Toaster />
-      </>
-    );
-  }
-
-  if (state.view === 'analytics') {
-    return (
-      <>
-        <AnalyticsDashboard onBack={handleBackToDashboard} />
-        <Toaster />
-      </>
-    );
-  }
-
-  if (state.view === 'profile') {
-    return (
-      <>
-        <ProfileView
-          userName={state.user.name}
-          userEmail={state.user.email}
-          userRole={state.user.role}
-          onBack={handleBackToDashboard}
-        />
-        <Toaster />
-      </>
-    );
-  }
-
-  return null;
+        <Route path="/" element={<Navigate to={state.user ? "/dashboard" : "/login"} replace />} />
+        <Route path="*" element={<Navigate to="/" replace />} />
+      </Routes>
+      <Toaster />
+    </>
+  );
 }

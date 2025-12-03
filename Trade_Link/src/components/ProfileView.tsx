@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './ui/card';
 import { Button } from './ui/button';
 import { Input } from './ui/input';
@@ -8,15 +8,20 @@ import { Avatar, AvatarFallback } from './ui/avatar';
 import { ArrowLeft, User, Mail, Phone, Briefcase, Edit2, Save } from 'lucide-react';
 import { UserRole } from '../types';
 import { toast } from 'sonner';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from './ui/tabs';
+import { Project, getProjects, deleteProject } from '../lib/api';
+import { ProjectCard } from './ProjectCard';
+import { AddProjectDialog } from './AddProjectDialog';
 
 interface ProfileViewProps {
   userName: string;
   userEmail: string;
   userRole: UserRole;
+  userId: string;
   onBack: () => void;
 }
 
-export function ProfileView({ userName, userEmail, userRole, onBack }: ProfileViewProps) {
+export function ProfileView({ userName, userEmail, userRole, userId, onBack }: ProfileViewProps) {
   const [isEditing, setIsEditing] = useState(false);
   const [name, setName] = useState(userName);
   const [email, setEmail] = useState(userEmail);
@@ -24,6 +29,20 @@ export function ProfileView({ userName, userEmail, userRole, onBack }: ProfileVi
   const [bio, setBio] = useState('');
   const [experience, setExperience] = useState('');
   const [company, setCompany] = useState('');
+  const [projects, setProjects] = useState<Project[]>([]);
+
+  useEffect(() => {
+    loadProjects();
+  }, [userId]);
+
+  const loadProjects = async () => {
+    try {
+      const data = await getProjects(userId);
+      setProjects(data);
+    } catch (error) {
+      console.error('Failed to load projects:', error);
+    }
+  };
 
   const handleSave = () => {
     toast.success('Profile updated successfully');
@@ -89,134 +108,186 @@ export function ProfileView({ userName, userEmail, userRole, onBack }: ProfileVi
             </CardHeader>
           </Card>
 
-          {/* Personal Information */}
-          <Card>
-            <CardHeader>
-              <CardTitle>Personal Information</CardTitle>
-              <CardDescription>Your basic account details</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="grid md:grid-cols-2 gap-4">
-                <div>
-                  <Label htmlFor="name">Full Name</Label>
-                  <div className="flex items-center gap-2 mt-2">
-                    {isEditing ? (
-                      <Input
-                        id="name"
-                        value={name}
-                        onChange={(e) => setName(e.target.value)}
-                      />
-                    ) : (
-                      <div className="flex items-center gap-2 text-slate-700">
-                        <User className="h-4 w-4 text-slate-500" />
-                        <span>{name}</span>
+          {/* Tabs for Personal Info and Projects */}
+          <Tabs defaultValue="info" className="w-full">
+            <TabsList className="grid w-full grid-cols-2">
+              <TabsTrigger value="info">Personal Information</TabsTrigger>
+              <TabsTrigger value="projects">Projects</TabsTrigger>
+            </TabsList>
+
+            <TabsContent value="info">
+              <Card>
+                <CardHeader>
+                  <CardTitle>Personal Information</CardTitle>
+                  <CardDescription>Your basic account details</CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="grid md:grid-cols-2 gap-4">
+                    <div>
+                      <Label htmlFor="name">Full Name</Label>
+                      <div className="flex items-center gap-2 mt-2">
+                        {isEditing ? (
+                          <Input
+                            id="name"
+                            value={name}
+                            onChange={(e) => setName(e.target.value)}
+                          />
+                        ) : (
+                          <div className="flex items-center gap-2 text-slate-700">
+                            <User className="h-4 w-4 text-slate-500" />
+                            <span>{name}</span>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+
+                    <div>
+                      <Label htmlFor="email">Email</Label>
+                      <div className="flex items-center gap-2 mt-2">
+                        {isEditing ? (
+                          <Input
+                            id="email"
+                            type="email"
+                            value={email}
+                            onChange={(e) => setEmail(e.target.value)}
+                          />
+                        ) : (
+                          <div className="flex items-center gap-2 text-slate-700">
+                            <Mail className="h-4 w-4 text-slate-500" />
+                            <span>{email}</span>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+
+                    <div>
+                      <Label htmlFor="phone">Phone Number</Label>
+                      <div className="flex items-center gap-2 mt-2">
+                        {isEditing ? (
+                          <Input
+                            id="phone"
+                            type="tel"
+                            value={phone}
+                            onChange={(e) => setPhone(e.target.value)}
+                          />
+                        ) : (
+                          <div className="flex items-center gap-2 text-slate-700">
+                            <Phone className="h-4 w-4 text-slate-500" />
+                            <span>{phone}</span>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+
+                    {userRole === 'tradesman' && (
+                      <div>
+                        <Label htmlFor="experience">Years of Experience</Label>
+                        <div className="flex items-center gap-2 mt-2">
+                          {isEditing ? (
+                            <Input
+                              id="experience"
+                              type="number"
+                              placeholder="0"
+                              value={experience}
+                              onChange={(e) => setExperience(e.target.value)}
+                            />
+                          ) : (
+                            <div className="flex items-center gap-2 text-slate-700">
+                              <Briefcase className="h-4 w-4 text-slate-500" />
+                              <span>{experience || 'Not specified'} years</span>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    )}
+
+                    {userRole === 'builder' && (
+                      <div>
+                        <Label htmlFor="company">Company Name</Label>
+                        <div className="flex items-center gap-2 mt-2">
+                          {isEditing ? (
+                            <Input
+                              id="company"
+                              placeholder="Your company"
+                              value={company}
+                              onChange={(e) => setCompany(e.target.value)}
+                            />
+                          ) : (
+                            <div className="flex items-center gap-2 text-slate-700">
+                              <Briefcase className="h-4 w-4 text-slate-500" />
+                              <span>{company || 'Not specified'}</span>
+                            </div>
+                          )}
+                        </div>
                       </div>
                     )}
                   </div>
-                </div>
 
-                <div>
-                  <Label htmlFor="email">Email</Label>
-                  <div className="flex items-center gap-2 mt-2">
-                    {isEditing ? (
-                      <Input
-                        id="email"
-                        type="email"
-                        value={email}
-                        onChange={(e) => setEmail(e.target.value)}
-                      />
-                    ) : (
-                      <div className="flex items-center gap-2 text-slate-700">
-                        <Mail className="h-4 w-4 text-slate-500" />
-                        <span>{email}</span>
-                      </div>
-                    )}
-                  </div>
-                </div>
-
-                <div>
-                  <Label htmlFor="phone">Phone Number</Label>
-                  <div className="flex items-center gap-2 mt-2">
-                    {isEditing ? (
-                      <Input
-                        id="phone"
-                        type="tel"
-                        value={phone}
-                        onChange={(e) => setPhone(e.target.value)}
-                      />
-                    ) : (
-                      <div className="flex items-center gap-2 text-slate-700">
-                        <Phone className="h-4 w-4 text-slate-500" />
-                        <span>{phone}</span>
-                      </div>
-                    )}
-                  </div>
-                </div>
-
-                {userRole === 'tradesman' && (
                   <div>
-                    <Label htmlFor="experience">Years of Experience</Label>
-                    <div className="flex items-center gap-2 mt-2">
+                    <Label htmlFor="bio">Bio</Label>
+                    <div className="mt-2">
                       {isEditing ? (
-                        <Input
-                          id="experience"
-                          type="number"
-                          placeholder="0"
-                          value={experience}
-                          onChange={(e) => setExperience(e.target.value)}
+                        <Textarea
+                          id="bio"
+                          placeholder="Tell us about yourself..."
+                          value={bio}
+                          onChange={(e) => setBio(e.target.value)}
+                          rows={4}
                         />
                       ) : (
-                        <div className="flex items-center gap-2 text-slate-700">
-                          <Briefcase className="h-4 w-4 text-slate-500" />
-                          <span>{experience || 'Not specified'} years</span>
-                        </div>
+                        <p className="text-slate-700 p-3 bg-slate-50 rounded-md">
+                          {bio || 'No bio added yet'}
+                        </p>
                       )}
                     </div>
                   </div>
-                )}
+                </CardContent>
+              </Card>
+            </TabsContent>
 
-                {userRole === 'builder' && (
+            <TabsContent value="projects">
+              <div className="space-y-6">
+                <div className="flex justify-between items-center">
                   <div>
-                    <Label htmlFor="company">Company Name</Label>
-                    <div className="flex items-center gap-2 mt-2">
-                      {isEditing ? (
-                        <Input
-                          id="company"
-                          placeholder="Your company"
-                          value={company}
-                          onChange={(e) => setCompany(e.target.value)}
-                        />
-                      ) : (
-                        <div className="flex items-center gap-2 text-slate-700">
-                          <Briefcase className="h-4 w-4 text-slate-500" />
-                          <span>{company || 'Not specified'}</span>
-                        </div>
-                      )}
-                    </div>
+                    <h2 className="text-xl font-semibold">Your Projects</h2>
+                    <p className="text-slate-600">Showcase your best work</p>
+                  </div>
+                  <AddProjectDialog userId={userId} onProjectAdded={loadProjects} />
+                </div>
+
+                {projects.length === 0 ? (
+                  <Card>
+                    <CardContent className="flex flex-col items-center justify-center py-12 text-center">
+                      <Briefcase className="h-12 w-12 text-slate-300 mb-4" />
+                      <h3 className="text-lg font-medium text-slate-900">No projects yet</h3>
+                      <p className="text-slate-500 mb-4">Start building your portfolio by adding your first project.</p>
+                      <AddProjectDialog userId={userId} onProjectAdded={loadProjects} />
+                    </CardContent>
+                  </Card>
+                ) : (
+                  <div className="grid md:grid-cols-2 gap-6">
+                    {projects.map(project => (
+                      <ProjectCard
+                        key={project.id}
+                        project={project}
+                        showDelete={true}
+                        onDelete={async (id) => {
+                          if (!confirm('Are you sure you want to delete this project?')) return;
+                          try {
+                            await deleteProject(id);
+                            loadProjects();
+                            toast.success('Project deleted');
+                          } catch (err) {
+                            toast.error('Failed to delete project');
+                          }
+                        }}
+                      />
+                    ))}
                   </div>
                 )}
               </div>
-
-              <div>
-                <Label htmlFor="bio">Bio</Label>
-                <div className="mt-2">
-                  {isEditing ? (
-                    <Textarea
-                      id="bio"
-                      placeholder="Tell us about yourself..."
-                      value={bio}
-                      onChange={(e) => setBio(e.target.value)}
-                      rows={4}
-                    />
-                  ) : (
-                    <p className="text-slate-700 p-3 bg-slate-50 rounded-md">
-                      {bio || 'No bio added yet'}
-                    </p>
-                  )}
-                </div>
-              </div>
-            </CardContent>
-          </Card>
+            </TabsContent>
+          </Tabs>
 
           {/* Account Settings */}
           <Card>

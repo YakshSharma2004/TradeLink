@@ -9,6 +9,7 @@ const userRoutes = require('./routes/UserRoutes');
 const tradeListingRoutes = require('./routes/tradelistings');
 const authRoutes = require('./routes/authRoutes');
 const messageRoutes = require('./routes/messageRoutes');
+const projectRoutes = require('./routes/projectRoutes');
 
 const app = express();
 const server = http.createServer(app);
@@ -16,6 +17,13 @@ const server = http.createServer(app);
 // Middleware
 app.use(cors());
 app.use(express.json());
+
+// Request logging middleware
+app.use((req, res, next) => {
+  console.log(`${req.method} ${req.url}`);
+  console.log('Body:', JSON.stringify(req.body, null, 2));
+  next();
+});
 
 // Socket.IO Setup
 const io = new Server(server, {
@@ -36,6 +44,7 @@ app.use('/api/users', userRoutes);
 app.use('/api/trade-listings', tradeListingRoutes);
 app.use('/api/auth', authRoutes);
 app.use('/api/messages', messageRoutes);
+app.use('/api/projects', projectRoutes);
 
 // Socket.IO Connection Handler
 io.on('connection', (socket) => {

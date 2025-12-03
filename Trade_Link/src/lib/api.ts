@@ -181,3 +181,29 @@ export function signup(signupData: SignUpData): Promise<User> {
         body: JSON.stringify(signupData),
     });
 }
+export interface Project {
+    id: string;
+    userId: string;
+    title: string;
+    description: string;
+    images: string[];
+    completionDate?: Date;
+    createdAt: Date;
+}
+
+export async function getProjects(userId: string): Promise<Project[]> {
+    return fetchAPI<Project[]>(`/projects?userId=${userId}`);
+}
+
+export async function createProject(projectData: Omit<Project, 'id' | 'createdAt'>): Promise<Project> {
+    return fetchAPI<Project>('/projects', {
+        method: 'POST',
+        body: JSON.stringify(projectData),
+    });
+}
+
+export async function deleteProject(id: string): Promise<void> {
+    return fetchAPI<void>(`/projects/${id}`, {
+        method: 'DELETE',
+    });
+}
