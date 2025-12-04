@@ -5,7 +5,7 @@ TradeLink is a platform connecting Builders and Tradesmen in the construction in
 ## Features
 
 ### For Builders
-*   **Project Management**: Create and manage construction projects with descriptions and images.
+*   **Project Management**: Create construction projects with descriptions and images for showcasing.
 *   **Find Tradesmen**: Browse and filter trade listings by trade type, area, and rate.
 *   **Direct Communication**: Chat directly with tradesmen to discuss opportunities.
 
