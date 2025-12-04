@@ -28,6 +28,32 @@ router.post('/signup', async (req, res) => {
     }
 });
 
+// POST /api/auth/login
+router.post('/login', async (req, res) => {
+  try {
+    const { email, role, password } = req.body;
+    
+    // Check if user exists with email first
+    const user = await User.findOne({ email });
+    
+    if (!user) {
+      return res.status(404).json({ error: 'Account not found' });
+    }
+
+    // Check if role matches
+    if (user.role !== role) {
+        return res.status(401).json({ error: `Please login as a ${user.role}` });
+    }
+
+    // Check if password matches
+    if (user.password !== password) {
+        return res.status(401).json({ error: 'Incorrect password' });
+    }
+    
+    res.json({
+      id: user._id.toString(),
+      name: user.name,
+      email: user.email,
       role: user.role
     });
   } catch (err) {
