@@ -36,6 +36,24 @@ TradeLink is a platform connecting Builders and Tradesmen in the construction in
 *   **Database**: MongoDB (Mongoose)
 *   **Real-time**: Socket.io
 
+## Environment Variables
+
+To run this project, you will need to add the following environment variables to your .env file.
+
+### Backend (`server/.env`)
+
+| Variable | Description | Default |
+| :--- | :--- | :--- |
+| `PORT` | Port for the backend server | `3001` |
+| `MONGO_URI` | MongoDB connection string | `mongodb://localhost:27017/tradelink` |
+| `CLIENT_ORIGIN` | URL of the frontend application | `http://localhost:3000` |
+
+### Frontend (`Trade_Link/.env`)
+
+| Variable | Description | Default |
+| :--- | :--- | :--- |
+| `VITE_API_URL` | URL of the backend API | `http://localhost:3001/api` |
+
 ## Prerequisites
 
 *   Node.js (v18 or higher)
@@ -56,6 +74,12 @@ cd server
 npm install
 ```
 
+Create a `.env` file in the `server` directory based on the example:
+```bash
+cp .env.example .env
+# Edit .env to match your configuration
+```
+
 Start the backend server:
 ```bash
 # Development mode with auto-reload
@@ -71,6 +95,12 @@ Open a new terminal, navigate to the frontend directory, and install dependencie
 ```bash
 cd Trade_Link
 npm install
+```
+
+Create a `.env` file in the `Trade_Link` directory based on the example:
+```bash
+cp .env.example .env
+# Edit .env to match your configuration
 ```
 
 Start the development server:
