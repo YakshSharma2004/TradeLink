@@ -9,7 +9,7 @@ import { ArrowLeft, User, Mail, Phone, Briefcase, Edit2, Save } from 'lucide-rea
 import { UserRole } from '../types';
 import { toast } from 'sonner';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from './ui/tabs';
-import { Project, getProjects, deleteProject } from '../lib/api';
+import { Project, getProjects, deleteProject, getUser, updateUser } from '../lib/api';
 import { ProjectCard } from './ProjectCard';
 import { AddProjectDialog } from './AddProjectDialog';
 
@@ -31,9 +31,28 @@ export function ProfileView({ userName, userEmail, userRole, userId, onBack }: P
   const [company, setCompany] = useState('');
   const [projects, setProjects] = useState<Project[]>([]);
 
+  const [isLoading, setIsLoading] = useState(false);
+
   useEffect(() => {
+    loadUserProfile();
     loadProjects();
   }, [userId]);
+
+  const loadUserProfile = async () => {
+    try {
+      const user = await getUser(userId);
+      setName(user.name);
+      setEmail(user.email);
+      if (user.phone) setPhone(user.phone);
+      if (user.bio) setBio(user.bio);
+      // Update other fields if they exist on the user object
+      // Note: The User type might need to be updated to include phone, bio, etc.
+      // For now we'll just update what we have
+    } catch (error) {
+      console.error('Failed to load user profile:', error);
+      toast.error('Failed to load profile data');
+    }
+  };
 
   const loadProjects = async () => {
     try {
@@ -44,9 +63,24 @@ export function ProfileView({ userName, userEmail, userRole, userId, onBack }: P
     }
   };
 
-  const handleSave = () => {
-    toast.success('Profile updated successfully');
-    setIsEditing(false);
+  const handleSave = async () => {
+    setIsLoading(true);
+    try {
+      await updateUser(userId, {
+        name,
+        email,
+        phone,
+        bio,
+        // Add other fields here once they are supported by the backend/type
+      });
+      toast.success('Profile updated successfully');
+      setIsEditing(false);
+    } catch (error) {
+      console.error('Failed to update profile:', error);
+      toast.error('Failed to update profile');
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const handleCancel = () => {
@@ -95,12 +129,18 @@ export function ProfileView({ userName, userEmail, userRole, userId, onBack }: P
                   </Button>
                 ) : (
                   <div className="flex gap-2">
-                    <Button variant="outline" onClick={handleCancel}>
+                    <Button variant="outline" onClick={handleCancel} disabled={isLoading}>
                       Cancel
                     </Button>
-                    <Button onClick={handleSave}>
-                      <Save className="mr-2 h-4 w-4" />
-                      Save Changes
+                    <Button onClick={handleSave} disabled={isLoading}>
+                      {isLoading ? (
+                        <span className="flex items-center">Saving...</span>
+                      ) : (
+                        <>
+                          <Save className="mr-2 h-4 w-4" />
+                          Save Changes
+                        </>
+                      )}
                     </Button>
                   </div>
                 )}
@@ -349,7 +389,7 @@ export function ProfileView({ userName, userEmail, userRole, userId, onBack }: P
             </CardContent>
           </Card>
         </div>
-      </main>
-    </div>
+      </main >
+    </div >
   );
 }

@@ -85,7 +85,7 @@ export function LoginPage({ onLogin, onNavigateToSignup }: LoginPageProps) {
           squareSize={30}
           direction='diagonal'
           borderColor='#fff'
-          hoverFillColor='#222'
+          hoverFillColor='#383cafff'
         />
       </div>
       <div className="w-full max-w-xl relative z-10">

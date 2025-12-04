@@ -9,6 +9,7 @@ const toUserDto = (user) => ({
   name: user.name,
   email: user.email,
   phone: user.phone,
+  bio: user.bio,
   role: user.role,
   createdAt: user.createdAt,
 });
@@ -51,9 +52,9 @@ router.get('/:id', async (req, res) => {
 // POST /api/users
 router.post('/', async (req, res) => {
   try {
-    const { name, email, phone, role } = req.body;
+    const { name, email, phone, role, bio } = req.body;
 
-    const user = new User({ name, email, phone, role });
+    const user = new User({ name, email, phone, role, bio });
     const saved = await user.save();
 
     res.status(201).json(toUserDto(saved));
@@ -66,11 +67,11 @@ router.post('/', async (req, res) => {
 // PATCH /api/users/:id
 router.patch('/:id', async (req, res) => {
   try {
-    const { name, email, phone, role } = req.body;
+    const { name, email, phone, role, bio } = req.body;
 
     const updated = await User.findByIdAndUpdate(
       req.params.id,
-      { name, email, phone, role },
+      { name, email, phone, role, bio },
       { new: true, runValidators: true },
     );
 

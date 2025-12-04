@@ -21,6 +21,10 @@ const userSchema = new mongoose.Schema({
     enum: ['builder', 'tradesman', 'other'],
     required: true,
   },
+  bio: {
+    type: String,
+    default: '',
+  },
   password: {
     type: String,
     required: true,
