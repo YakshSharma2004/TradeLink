@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { toast } from 'sonner';
 import { Button } from './ui/button';
 import { Input } from './ui/input';
 import { Label } from './ui/label';
@@ -56,9 +57,22 @@ export function LoginPage({ onLogin, onNavigateToSignup }: LoginPageProps) {
 
       // Call parent's onLogin with the data from API
       onLogin(user.role, user.email, user.name, user.id);
-    } catch (err) {
+    } catch (err: any) {
       console.error('Login failed:', err);
-      alert('Login failed. User not found.');
+
+      const errorMessage = err.message || 'Login failed';
+
+      if (errorMessage.includes('Account not found')) {
+        toast.error('No account found with this email');
+      } else if (errorMessage.includes('Incorrect password')) {
+        toast.error('Incorrect password');
+      } else if (errorMessage.includes('Please login as')) {
+        toast.error(errorMessage);
+      } else if (errorMessage.includes('Failed to fetch') || errorMessage.includes('Network request failed')) {
+        toast.error('Unable to connect to server. Please check your internet connection.');
+      } else {
+        toast.error('Login failed. Please try again.');
+      }
     }
   };
 
@@ -68,7 +82,7 @@ export function LoginPage({ onLogin, onNavigateToSignup }: LoginPageProps) {
       <div className="absolute inset-0 z-0 hidden dark:block">
         <Squares
           speed={0.5}
-          squareSize={40}
+          squareSize={30}
           direction='diagonal'
           borderColor='#fff'
           hoverFillColor='#222'

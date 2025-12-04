@@ -5,10 +5,11 @@ import { Badge } from './ui/badge';
 import { Label } from './ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select';
 import { Slider } from './ui/slider';
-import { ArrowLeft, MapPin, Clock, Mail, Phone, MessageSquare, DollarSign } from 'lucide-react';
+import { ArrowLeft, MapPin, Clock, Mail, Phone, MessageSquare, DollarSign, User } from 'lucide-react';
 import { TradeType, ServiceArea, TradeListing } from '../types';
 import { serviceAreas } from '../lib/mockData';
 import { getTradeListings } from '../lib/api';
+import { PublicProfileView } from './PublicProfileView';
 
 interface TradeListingsViewProps {
   tradeType: TradeType;
@@ -26,6 +27,7 @@ export function TradeListingsView({
   const [minExperience, setMinExperience] = useState<number>(0);
   const [allListings, setAllListings] = useState<TradeListing[]>([]);
   const [loading, setLoading] = useState(true);
+  const [selectedTradesmanId, setSelectedTradesmanId] = useState<string | null>(null);
 
   useEffect(() => {
     async function fetchData() {
@@ -55,6 +57,16 @@ export function TradeListingsView({
     const total = filteredListings.reduce((sum, listing) => sum + listing.rate, 0);
     return Math.round(total / filteredListings.length);
   }, [filteredListings]);
+
+  if (selectedTradesmanId) {
+    return (
+      <PublicProfileView
+        userId={selectedTradesmanId}
+        onBack={() => setSelectedTradesmanId(null)}
+        onChat={onOpenChat}
+      />
+    );
+  }
 
   return (
 
@@ -196,6 +208,14 @@ export function TradeListingsView({
                       </div>
 
                       <div className="flex gap-2 pt-2">
+                        <Button
+                          variant="secondary"
+                          className="flex-1"
+                          onClick={() => setSelectedTradesmanId(listing.tradesmanId)}
+                        >
+                          <User className="mr-2 h-4 w-4" />
+                          View Profile
+                        </Button>
                         <Button
                           variant="default"
                           className="flex-1"

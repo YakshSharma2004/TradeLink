@@ -13,7 +13,7 @@ export function ProjectCard({ project, onDelete, showDelete }: ProjectCardProps)
     return (
         <Card className="overflow-hidden">
             {project.images && project.images.length > 0 && (
-                <div className="aspect-video w-full overflow-hidden bg-slate-100">
+                <div className="h-48 w-full overflow-hidden bg-slate-100 relative">
                     <img
                         src={project.images[0]}
                         alt={project.title}

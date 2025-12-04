@@ -28,34 +28,6 @@ router.post('/signup', async (req, res) => {
     }
 });
 
-// POST /api/auth/login
-router.post('/login', async (req, res) => {
-  try {
-    const { email, role, password } = req.body;
-    console.log('Login attempt details:', { email, role, password });
-    
-    // Efficiently check email, role AND password in the database query
-    const user = await User.findOne({ email, role, password });
-    console.log('User found:', user ? 'Yes' : 'No');
-    
-    if (!user) {
-      // Debug: Check if user exists with just email
-      const userByEmail = await User.findOne({ email });
-      console.log('User found by email only:', userByEmail ? 'Yes' : 'No');
-      if (userByEmail) {
-        console.log('Stored role:', userByEmail.role);
-        console.log('Stored password:', userByEmail.password);
-        console.log('Provided role:', role);
-        console.log('Provided password:', password);
-      }
-      
-      return res.status(404).json({ error: 'User not found or details do not match' });
-    }
-    
-    res.json({
-      id: user._id.toString(),
-      name: user.name,
-      email: user.email,
       role: user.role
     });
   } catch (err) {

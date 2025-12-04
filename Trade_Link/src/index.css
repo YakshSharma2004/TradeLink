@@ -450,14 +450,16 @@
     font-weight: var(--font-weight-normal);
     line-height: 1.5;
   }
+
+  .dark ::-webkit-calendar-picker-indicator {
+    filter: invert(1);
+  }
 }
 
 @layer utilities {
   .\@container\/card-header {
     container: card-header / inline-size;
   }
-
-
 
   .pointer-events-none {
     pointer-events: none;

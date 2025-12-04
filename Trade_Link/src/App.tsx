@@ -140,6 +140,7 @@ export default function App() {
                 userId={state.user.id}
                 userEmail={state.user.email}
                 onNavigate={handleNavigate}
+                onChat={handleOpenChat}
               />
             ) : (
               <BuilderDashboard

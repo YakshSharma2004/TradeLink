@@ -19,6 +19,7 @@ export function AddProjectDialog({ userId, onProjectAdded, trigger }: AddProject
     const [title, setTitle] = useState('');
     const [description, setDescription] = useState('');
     const [imageUrl, setImageUrl] = useState('');
+    const [fileImage, setFileImage] = useState('');
     const [date, setDate] = useState('');
 
     const handleSubmit = async (e: React.FormEvent) => {
@@ -30,11 +31,15 @@ export function AddProjectDialog({ userId, onProjectAdded, trigger }: AddProject
 
         setLoading(true);
         try {
+            const images = [];
+            if (imageUrl) images.push(imageUrl);
+            if (fileImage) images.push(fileImage);
+
             await createProject({
                 userId,
                 title,
                 description,
-                images: imageUrl ? [imageUrl] : [],
+                images,
                 completionDate: date ? new Date(date) : undefined,
             });
 
@@ -46,6 +51,7 @@ export function AddProjectDialog({ userId, onProjectAdded, trigger }: AddProject
             setTitle('');
             setDescription('');
             setImageUrl('');
+            setFileImage('');
             setDate('');
         } catch (error) {
             toast.error('Failed to add project');
@@ -60,7 +66,7 @@ export function AddProjectDialog({ userId, onProjectAdded, trigger }: AddProject
             <DialogTrigger asChild>
                 {trigger || <Button>Add Project</Button>}
             </DialogTrigger>
-            <DialogContent className="sm:max-w-[425px]">
+            <DialogContent className="sm:max-w-[350px]">
                 <DialogHeader>
                     <DialogTitle>Add Project</DialogTitle>
                     <DialogDescription>
@@ -98,6 +104,47 @@ export function AddProjectDialog({ userId, onProjectAdded, trigger }: AddProject
                             onChange={(e) => setImageUrl(e.target.value)}
                             placeholder="https://example.com/image.jpg"
                         />
+                    </div>
+
+                    <div className="space-y-2">
+                        <Label htmlFor="file">Or Upload Photo</Label>
+                        <Input
+                            id="file"
+                            type="file"
+                            accept="image/*"
+                            onChange={(e) => {
+                                const file = e.target.files?.[0];
+                                if (file) {
+                                    const reader = new FileReader();
+                                    reader.onloadend = () => {
+                                        // We'll store the base64 string in a separate state or just append to images on submit
+                                        // For now, let's use a temp state or just reuse imageUrl if empty?
+                                        // Better to have a separate state for file data
+                                        setFileImage(reader.result as string);
+                                    };
+                                    reader.readAsDataURL(file);
+                                }
+                            }}
+                        />
+                        {fileImage && (
+                            <div className="mt-2 relative w-full h-32 rounded-md overflow-hidden border border-border">
+                                <img src={fileImage} alt="Preview" className="w-full h-full object-cover" />
+                                <Button
+                                    type="button"
+                                    variant="destructive"
+                                    size="sm"
+                                    className="absolute top-1 right-1 h-6 w-6 p-0"
+                                    onClick={() => {
+                                        setFileImage('');
+                                        // Reset file input if possible, or just ignore it
+                                        const fileInput = document.getElementById('file') as HTMLInputElement;
+                                        if (fileInput) fileInput.value = '';
+                                    }}
+                                >
+                                    &times;
+                                </Button>
+                            </div>
+                        )}
                     </div>
 
                     <div className="space-y-2">

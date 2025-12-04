@@ -69,7 +69,7 @@ export function SignUpPage({ onSignup, onBackToLogin }: SignUpPageProps) {
             <div className="absolute inset-0 z-0 hidden dark:block">
                 <Squares
                     speed={0.5}
-                    squareSize={40}
+                    squareSize={30}
                     direction='diagonal'
                     borderColor='#fff'
                     hoverFillColor='#222'

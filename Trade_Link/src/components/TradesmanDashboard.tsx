@@ -8,25 +8,28 @@ import { Textarea } from './ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select';
 import { Checkbox } from './ui/checkbox';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from './ui/dialog';
-import { Plus, Edit, Trash2, DollarSign, BarChart3, MessageSquare, User, Loader2 } from 'lucide-react';
+import { Plus, Edit, Trash2, DollarSign, BarChart3, MessageSquare, User, Loader2, HardHat } from 'lucide-react';
 import { TradeType, ServiceArea, TradeListing } from '../types';
 import { tradeTypes, serviceAreas } from '../lib/mockData';
 import { getTradeListings, createTradeListing, updateTradeListing, deleteTradeListing } from '../lib/api';
 import { toast } from 'sonner';
 import Threads from './ui/Threads';
+import { BuildersDirectory } from './BuildersDirectory';
 
 interface TradesmanDashboardProps {
   userName: string;
   userId: string;
   userEmail: string;
   onNavigate: (view: 'analytics' | 'chat' | 'profile') => void;
+  onChat: (recipientId: string, recipientName: string) => void;
 }
 
-export function TradesmanDashboard({ userName, userId, userEmail, onNavigate }: TradesmanDashboardProps) {
+export function TradesmanDashboard({ userName, userId, userEmail, onNavigate, onChat }: TradesmanDashboardProps) {
   const [myListings, setMyListings] = useState<TradeListing[]>([]);
   const [loading, setLoading] = useState(true);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingListing, setEditingListing] = useState<TradeListing | null>(null);
+  const [currentView, setCurrentView] = useState<'listings' | 'builders'>('listings');
 
   // Form state
   const [tradeType, setTradeType] = useState<TradeType>('Framing');
@@ -142,6 +145,32 @@ export function TradesmanDashboard({ userName, userId, userEmail, onNavigate }: 
     );
   }
 
+  if (currentView === 'builders') {
+    return (
+      <div className="min-h-screen bg-background relative overflow-hidden">
+        <div className="absolute inset-0 z-0 pointer-events-none hidden dark:block">
+          <Threads color={[1, 1, 1]} amplitude={1} distance={0} enableMouseInteraction={true} />
+        </div>
+        <header className="bg-card border-b border-border sticky top-0 z-10 relative">
+          <div className="max-w-7xl mx-auto px-4 py-4 flex items-center justify-between">
+            <div>
+              <h1 className="text-3xl text-foreground">Trade Link</h1>
+              <p className="text-muted-foreground">Builders Directory</p>
+            </div>
+            <div className="flex gap-2">
+              <Button variant="ghost" onClick={() => setCurrentView('listings')}>
+                Back to Dashboard
+              </Button>
+            </div>
+          </div>
+        </header>
+        <main className="max-w-7xl mx-auto px-4 py-8 relative z-10">
+          <BuildersDirectory onBack={() => setCurrentView('listings')} onChat={onChat} />
+        </main>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-background relative overflow-hidden">
       <div className="absolute inset-0 z-0 pointer-events-none hidden dark:block">
@@ -155,6 +184,10 @@ export function TradesmanDashboard({ userName, userId, userEmail, onNavigate }: 
             <p className="text-muted-foreground">Welcome back, {userName}</p>
           </div>
           <div className="flex gap-2">
+            <Button variant="outline" onClick={() => setCurrentView('builders')}>
+              <HardHat className="mr-2 h-4 w-4" />
+              Builders
+            </Button>
             <Button variant="outline" onClick={() => onNavigate('analytics')}>
               <BarChart3 className="mr-2 h-4 w-4" />
               Analytics
