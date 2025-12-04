@@ -278,47 +278,43 @@ export function ChatInterface({
   }
 
   return (
-    // FIX 1: Change min-h-screen to h-screen and add flex-col/overflow-hidden
-    // This locks the browser window so ONLY the inside panels scroll.
-    <div className="fixed inset-0 z-50 flex flex-col bg-slate-50 overflow-hidden">
-
+    <div className="min-h-screen bg-background flex flex-col">
       {/* Header */}
-      {/* Remove sticky/z-index, just let it sit at the top naturally */}
-      <header className="bg-white border-b border-slate-200 flex-none">
+      <header className="bg-card border-b border-border sticky top-0 z-10">
         <div className="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
           <div className="flex items-center">
             <Button variant="ghost" onClick={onBack}>
               <ArrowLeft className="mr-2 h-4 w-4" />
               Back
             </Button>
-            <h1 className="text-3xl text-slate-900 mt-2 ml-4">Messages</h1>
+            <h1 className="text-3xl text-foreground mt-2 ml-4">Messages</h1>
           </div>
           <div className="flex items-center gap-2">
             <div className={`w-3 h-3 rounded-full ${isConnected ? 'bg-green-500' : 'bg-red-500'}`} />
-            <span className="text-sm text-slate-600">{isConnected ? 'Connected' : 'Disconnected'}</span>
+            <span className="text-sm text-muted-foreground">{isConnected ? 'Connected' : 'Disconnected'}</span>
           </div>
         </div>
       </header>
 
-      <main className="flex-1 max-w-7xl mx-auto w-full p-4 h-[calc(100vh-80px)]">
-        <div className="grid lg:grid-cols-3 gap-6 h-full">
-          <Card className="lg:col-span-1 h-full flex flex-col overflow-hidden border-slate-200 shadow-sm">
-            <CardHeader className="shrink-0">
+      <main className="flex-1 max-w-7xl mx-auto w-full p-4">
+        <div className="grid lg:grid-cols-3 gap-6 items-start">
+          <Card className="lg:col-span-1 border-border shadow-sm lg:sticky lg:top-24">
+            <CardHeader>
               <CardTitle>Conversations</CardTitle>
               <div className="relative mt-2">
-                <Search className="absolute left-2 top-2.5 h-4 w-4 text-slate-500" />
+                <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
                 <Input
                   placeholder="Search conversations..."
-                  className="pl-8"
+                  className="pl-8 bg-input-background"
                   value={searchQuery}
                   onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSearchQuery(e.target.value)}
                 />
               </div>
             </CardHeader>
-            <CardContent className="p-0 flex-1 min-h-0 flex flex-col">
-              <ScrollArea className="h-full">
+            <CardContent className="p-0">
+              <div className="max-h-[600px] overflow-y-auto">
                 {filteredConversations.length === 0 ? (
-                  <div className="p-8 text-center text-slate-500 text-sm">
+                  <div className="p-8 text-center text-muted-foreground text-sm">
                     No conversations found
                   </div>
                 ) : (
@@ -328,30 +324,30 @@ export function ChatInterface({
                         key={conv.userId}
                         onClick={() => setSelectedConversation(conv.userId)}
                         className={`
-                          relative p-4 border-b border-slate-100 cursor-pointer transition-all
-                          hover:bg-slate-50
+                          relative p-4 border-b border-border cursor-pointer transition-all
+                          hover:bg-accent hover:text-accent-foreground
                           ${selectedConversation === conv.userId
-                            ? 'bg-blue-50/50 border-l-4 border-l-blue-600'
+                            ? 'bg-accent/50 border-l-4 border-l-primary'
                             : 'border-l-4 border-l-transparent pl-4'
                           }`}
                       >
                         <div className="flex items-start gap-3">
-                          <Avatar className="h-10 w-10 border border-slate-200">
-                            <AvatarFallback className="bg-slate-200 text-slate-600 font-medium text-xs">
+                          <Avatar className="h-10 w-10 border border-border">
+                            <AvatarFallback className="bg-muted text-muted-foreground font-medium text-xs">
                               {conv.userName.split(" ").map((n) => n[0]).join("").toUpperCase().slice(0, 2)}
                             </AvatarFallback>
                           </Avatar>
                           <div className="flex-1 min-w-0 overflow-hidden">
                             <div className="flex items-center justify-between mb-0.5">
-                              <p className="truncate text-sm font-semibold text-slate-900">{conv.userName}</p>
-                              <span className="text-[10px] text-slate-400 whitespace-nowrap ml-2">
+                              <p className="truncate text-sm font-semibold text-foreground">{conv.userName}</p>
+                              <span className="text-[10px] text-muted-foreground whitespace-nowrap ml-2">
                                 {new Date(conv.lastMessageTime).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
                               </span>
                             </div>
                             <div className="flex items-center justify-between gap-2">
-                              <p className="truncate text-xs text-slate-500 w-full">{conv.lastMessage}</p>
+                              <p className="truncate text-xs text-muted-foreground w-full">{conv.lastMessage}</p>
                               {conv.unreadCount > 0 && (
-                                <span className="flex-none flex h-5 w-5 items-center justify-center rounded-full bg-blue-600 text-[10px] font-bold text-white shadow-sm">
+                                <span className="flex-none flex h-5 w-5 items-center justify-center rounded-full bg-primary text-[10px] font-bold text-primary-foreground shadow-sm">
                                   {conv.unreadCount}
                                 </span>
                               )}
@@ -363,14 +359,14 @@ export function ChatInterface({
                     ))}
                   </div>
                 )}
-              </ScrollArea>
+              </div>
             </CardContent>
           </Card>
 
-          <Card className="lg:col-span-2 flex flex-col h-full overflow-hidden border-slate-200 shadow-sm">
+          <Card className="lg:col-span-2 border-border shadow-sm min-h-[500px] flex flex-col">
             {selectedConversation ? (
               <>
-                <CardHeader className="border-b border-slate-200 shrink-0">
+                <CardHeader className="border-b border-border">
                   <div className="flex items-center gap-3">
                     <Avatar>
                       <AvatarFallback>
@@ -383,56 +379,54 @@ export function ChatInterface({
                   </div>
                 </CardHeader>
 
-                <CardContent className="flex-1 p-4 overflow-hidden flex flex-col min-h-0 bg-slate-50/50">
-                  <ScrollArea className="flex-1 pr-4 h-full">
-                    <div className="space-y-4 pb-4"> {/* Added pb-4 for spacing at bottom */}
-                      {messages.map(message => {
-                        const isSent = message.senderId === currentUserId;
-                        return (
+                <CardContent className="flex-1 p-4 bg-background/50 flex flex-col">
+                  <div className="space-y-4 pb-4 flex-1">
+                    {messages.map(message => {
+                      const isSent = message.senderId === currentUserId;
+                      return (
+                        <div
+                          key={message.id}
+                          className={`flex ${isSent ? 'justify-end' : 'justify-start'}`}
+                        >
                           <div
-                            key={message.id}
-                            className={`flex ${isSent ? 'justify-end' : 'justify-start'}`}
+                            className={`max-w-[75%] rounded-2xl px-4 py-2 shadow-sm ${isSent
+                              ? 'bg-primary text-primary-foreground rounded-br-none'
+                              : 'bg-card text-card-foreground border border-border rounded-bl-none'
+                              }`}
                           >
-                            <div
-                              className={`max-w-[75%] rounded-2xl px-4 py-2 shadow-sm ${isSent
-                                ? 'bg-blue-600 text-white rounded-br-none'
-                                : 'bg-white text-slate-900 border border-slate-200 rounded-bl-none'
+                            <p className="break-words text-sm">{message.message}</p>
+                            <p
+                              className={`text-[10px] mt-1 text-right ${isSent ? 'text-primary-foreground/80' : 'text-muted-foreground'
                                 }`}
                             >
-                              <p className="break-words text-sm">{message.message}</p>
-                              <p
-                                className={`text-[10px] mt-1 text-right ${isSent ? 'text-blue-100' : 'text-slate-400'
-                                  }`}
-                              >
-                                {message.timestamp.toLocaleTimeString([], {
-                                  hour: '2-digit',
-                                  minute: '2-digit',
-                                })}
-                              </p>
-                            </div>
+                              {message.timestamp.toLocaleTimeString([], {
+                                hour: '2-digit',
+                                minute: '2-digit',
+                              })}
+                            </p>
                           </div>
-                        );
-                      })}
-                      <div ref={messagesEndRef} />
-                    </div>
-                  </ScrollArea>
+                        </div>
+                      );
+                    })}
+                    <div ref={messagesEndRef} />
+                  </div>
 
-                  <form onSubmit={handleSendMessage} className="flex gap-2 mt-4 pt-2">
+                  <form onSubmit={handleSendMessage} className="flex gap-2 mt-4 pt-4 border-t border-border sticky bottom-0 bg-card p-2 -mx-2 -mb-2 rounded-b-xl">
                     <Input
                       placeholder="Type a message..."
                       value={messageInput}
                       onChange={(e) => setMessageInput(e.target.value)}
-                      className="flex-1 bg-white"
+                      className="flex-1 bg-input-background"
                     />
-                    <Button type="submit" disabled={!messageInput.trim()} className="bg-blue-600 hover:bg-blue-700">
+                    <Button type="submit" disabled={!messageInput.trim()} className="bg-primary hover:bg-primary/90">
                       <Send className="h-4 w-4" />
                     </Button>
                   </form>
                 </CardContent>
               </>
             ) : (
-              <CardContent className="flex items-center justify-center h-full bg-slate-50/30">
-                <div className="text-center text-slate-500">
+              <CardContent className="flex items-center justify-center h-[500px] bg-muted/30">
+                <div className="text-center text-muted-foreground">
                   <p>Select a conversation to start messaging</p>
                 </div>
               </CardContent>

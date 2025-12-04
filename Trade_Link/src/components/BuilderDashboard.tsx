@@ -10,6 +10,7 @@ import {
 } from 'lucide-react';
 import { TradeType, TradeListing } from '../types';
 import { getTradeListings } from '../lib/api';
+import Threads from './ui/Threads';
 
 interface BuilderDashboardProps {
   onSelectTrade: (trade: TradeType) => void;
@@ -85,24 +86,27 @@ export function BuilderDashboard({ onSelectTrade, onNavigate, userName }: Builde
   }
 
   return (
-    <div className="min-h-screen bg-slate-50 animate-fade-in">
+    <div className="min-h-screen bg-background animate-fade-in relative overflow-hidden">
+      <div className="absolute inset-0 z-0 pointer-events-none hidden dark:block">
+        <Threads color={[1, 1, 1]} amplitude={1} distance={0} enableMouseInteraction={true} />
+      </div>
       {/* Header */}
-      <header className="bg-gradient-construction border-b border-white/10 sticky top-0 z-10 shadow-lg shadow-gray-900/10">
+      <header className="bg-card border-b border-border sticky top-0 z-10 shadow-sm relative">
         <div className="max-w-7xl mx-auto px-4 py-4 flex items-center justify-between">
           <div>
-            <h1 className="text-3xl font-bold text-white drop-shadow-md">Trade Link</h1>
-            <p className="text-white/90">Welcome back, {userName}</p>
+            <h1 className="text-3xl font-bold text-foreground drop-shadow-sm">Trade Link</h1>
+            <p className="text-muted-foreground">Welcome back, {userName}</p>
           </div>
           <div className="flex gap-2">
-            <Button variant="secondary" className="hover-lift" onClick={() => onNavigate('analytics')}>
+            <Button variant="outline" className="hover-lift" onClick={() => onNavigate('analytics')}>
               <BarChart3 className="mr-2 h-4 w-4" />
               Analytics
             </Button>
-            <Button variant="secondary" className="hover-lift" onClick={() => onNavigate('chat')}>
+            <Button variant="outline" className="hover-lift" onClick={() => onNavigate('chat')}>
               <MessageSquare className="mr-2 h-4 w-4" />
               Messages
             </Button>
-            <Button variant="secondary" className="hover-lift" onClick={() => onNavigate('profile')}>
+            <Button variant="outline" className="hover-lift" onClick={() => onNavigate('profile')}>
               <User className="mr-2 h-4 w-4" />
               Profile
             </Button>
@@ -111,10 +115,10 @@ export function BuilderDashboard({ onSelectTrade, onNavigate, userName }: Builde
       </header>
 
       {/* Main Content */}
-      <main className="max-w-7xl mx-auto px-4 py-8">
+      <main className="max-w-7xl mx-auto px-4 py-8 relative z-10">
         <div className="mb-8 animate-slide-up">
-          <h2 className="text-3xl font-bold mb-2 text-slate-900">Find Tradesmen by Category</h2>
-          <p className="text-lg text-slate-600">
+          <h2 className="text-3xl font-bold mb-2 text-foreground">Find Tradesmen by Category</h2>
+          <p className="text-lg text-muted-foreground">
             Browse available tradesmen across Calgary's construction sectors
           </p>
         </div>
@@ -128,7 +132,7 @@ export function BuilderDashboard({ onSelectTrade, onNavigate, userName }: Builde
             return (
               <Card
                 key={trade.name}
-                className={`cursor-pointer hover-lift hover-glow transition-all duration-300 animate-slide-up ${delayClass} border-l-4 border-l-transparent hover:border-l-gray-500`}
+                className={`cursor-pointer hover-lift transition-all duration-300 animate-slide-up ${delayClass} border-l-4 border-l-transparent hover:border-l-gray-500 dark:hover:shadow-[0_0_30px_-5px_rgba(255,255,255,0.3)] dark:hover:border-white/20`}
                 onClick={() => onSelectTrade(trade.name)}
               >
                 <CardHeader className="pb-3">
@@ -141,7 +145,11 @@ export function BuilderDashboard({ onSelectTrade, onNavigate, userName }: Builde
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <Button variant="default" className="w-full bg-gradient-construction hover:opacity-90" size="sm">
+                  <Button
+                    variant="default"
+                    className="w-full bg-gradient-construction hover:opacity-90 dark:bg-white dark:text-black dark:hover:bg-gray-200 dark:bg-none"
+                    size="sm"
+                  >
                     View Listings
                   </Button>
                 </CardContent>

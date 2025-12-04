@@ -9,6 +9,7 @@ import { ChatInterface } from './components/ChatInterface';
 import { AnalyticsDashboard } from './components/AnalyticsDashboard';
 import { ProfileView } from './components/ProfileView';
 import { Toaster } from './components/ui/sonner';
+import { ModeToggle } from './components/ModeToggle';
 import { UserRole, TradeType } from './types';
 
 interface AppState {
@@ -30,6 +31,28 @@ export default function App() {
     selectedTrade: null,
     chatRecipient: null,
   });
+
+  // Theme State
+  const [theme, setTheme] = useState<'light' | 'dark'>(() => {
+    if (typeof window !== 'undefined') {
+      const saved = localStorage.getItem('vite-ui-theme');
+      if (saved === 'dark' || saved === 'light') return saved;
+      return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    }
+    return 'light';
+  });
+
+  // Apply theme class
+  useEffect(() => {
+    const root = window.document.documentElement;
+    root.classList.remove('light', 'dark');
+    root.classList.add(theme);
+    localStorage.setItem('vite-ui-theme', theme);
+  }, [theme]);
+
+  const toggleTheme = () => {
+    setTheme(prev => prev === 'light' ? 'dark' : 'light');
+  };
 
   const handleLogin = (role: UserRole, email: string, name: string, id?: string) => {
     const userId = id || Date.now().toString();
@@ -83,6 +106,9 @@ export default function App() {
 
   return (
     <>
+      <div className="fixed top-4 right-4 z-50">
+        <ModeToggle theme={theme} toggleTheme={toggleTheme} />
+      </div>
       <Routes>
         <Route path="/login" element={
           !state.user ? (

@@ -6,28 +6,29 @@ import { Hammer, ArrowLeft } from 'lucide-react';
 import { UserRole } from '../types';
 import { signup } from '../lib/api';
 import { gradients, hoverLift } from '../lib/styles';
+import Squares from './ui/Squares';
 
 const styles = {
-    container: "min-h-screen bg-slate-50 flex items-center justify-center p-4 dark:bg-slate-950",
-    card: "w-full max-w-xl bg-white rounded-3xl shadow-xl p-8 border border-slate-100 dark:bg-slate-900 dark:border-slate-800",
-    backButton: "flex items-center gap-2 text-slate-500 hover:text-slate-900 mb-6 transition-colors font-medium dark:text-slate-400 dark:hover:text-white",
+    container: "min-h-screen bg-background flex items-center justify-center p-4 relative overflow-hidden",
+    card: "w-full max-w-xl bg-card rounded-3xl shadow-xl p-8 border border-border relative z-10",
+    backButton: "flex items-center gap-2 text-muted-foreground hover:text-foreground mb-6 transition-colors font-medium",
     header: {
         wrapper: "mb-8",
-        iconContainer: `w-12 h-12 ${gradients.construction} rounded-xl flex items-center justify-center shadow-lg shadow-gray-900/10`,
-        title: "text-3xl font-bold text-slate-900 tracking-tight dark:text-white",
-        subtitle: "text-slate-500 font-medium dark:text-slate-400"
+        iconContainer: `w-12 h-12 ${gradients.construction} rounded-xl flex items-center justify-center shadow-lg shadow-primary/10`,
+        title: "text-3xl font-bold text-foreground tracking-tight",
+        subtitle: "text-muted-foreground font-medium"
     },
     roleButton: (isActive: boolean) =>
         `flex-1 py-3 px-4 rounded-lg font-medium transition-all ${isActive
-            ? `${gradients.construction} text-white shadow-md`
-            : 'hover:bg-slate-50 text-slate-700 dark:text-slate-300 dark:hover:bg-slate-800'}`,
+            ? 'bg-primary text-primary-foreground shadow-sm'
+            : 'hover:bg-accent hover:text-accent-foreground text-muted-foreground'}`,
     form: {
-        label: "text-slate-900 font-medium dark:text-slate-200",
-        input: "mt-2 bg-slate-50 border-slate-200 focus:border-orange-500 focus:ring-orange-500 dark:bg-slate-800 dark:border-slate-700 dark:text-white",
+        label: "text-foreground font-medium",
+        input: "mt-2 bg-input-background border-input focus:border-ring focus:ring-ring text-foreground",
         submitButton: `w-full ${gradients.construction} hover:opacity-90 py-6 text-base font-semibold shadow-construction text-white ${hoverLift}`
     },
     loginLink: {
-        text: "text-center mt-6 text-slate-600 dark:text-slate-400",
+        text: "text-center mt-6 text-muted-foreground",
         button: "text-orange-600 hover:text-orange-700 font-medium hover:underline dark:text-orange-500"
     }
 };
@@ -65,7 +66,16 @@ export function SignUpPage({ onSignup, onBackToLogin }: SignUpPageProps) {
 
     return (
         <div className={styles.container}>
-            <div className="w-full max-w-xl">
+            <div className="absolute inset-0 z-0 hidden dark:block">
+                <Squares
+                    speed={0.5}
+                    squareSize={40}
+                    direction='diagonal'
+                    borderColor='#fff'
+                    hoverFillColor='#222'
+                />
+            </div>
+            <div className="w-full max-w-xl relative z-10">
                 <div className={styles.card}>
                     {/* Back Button */}
                     <button
@@ -90,7 +100,7 @@ export function SignUpPage({ onSignup, onBackToLogin }: SignUpPageProps) {
                     </div>
 
                     {/* Role Selection Tabs */}
-                    <div className="bg-slate-100 rounded-xl p-1 flex gap-1 mb-6 dark:bg-slate-800/50">
+                    <div className="bg-muted rounded-xl p-1 flex gap-1 mb-6">
                         <button
                             type="button"
                             onClick={() => setSelectedRole('builder')}
@@ -173,7 +183,7 @@ export function SignUpPage({ onSignup, onBackToLogin }: SignUpPageProps) {
                                 onChange={(e) => setPhone(e.target.value)}
                                 className={styles.form.input}
                             />
-                            <p className="text-sm text-slate-500 mt-1 dark:text-slate-400">Optional - helps others contact you</p>
+                            <p className="text-sm text-muted-foreground mt-1">Optional - helps others contact you</p>
                         </div>
 
                         <Button

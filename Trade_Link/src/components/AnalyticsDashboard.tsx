@@ -37,10 +37,10 @@ export function AnalyticsDashboard({ onBack }: AnalyticsDashboardProps) {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-slate-50 flex items-center justify-center">
+      <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="text-center">
           <Loader2 className="h-8 w-8 animate-spin text-blue-500 mx-auto mb-4" />
-          <p className="text-slate-600">Loading analytics...</p>
+          <p className="text-muted-foreground">Loading analytics...</p>
         </div>
       </div>
     );
@@ -116,16 +116,16 @@ export function AnalyticsDashboard({ onBack }: AnalyticsDashboardProps) {
   }).filter(d => d.count > 0);
 
   return (
-    <div className="min-h-screen bg-slate-50 animate-fade-in">
+    <div className="min-h-screen bg-background animate-fade-in">
       {/* Header */}
-      <header className="bg-gradient-steel border-b border-blue-300/50 sticky top-0 z-10 shadow-steel">
+      <header className="bg-card border-b border-border sticky top-0 z-10 shadow-sm">
         <div className="max-w-7xl mx-auto px-4 py-4">
-          <Button variant="secondary" className="hover-lift" onClick={onBack}>
+          <Button variant="outline" className="hover-lift" onClick={onBack}>
             <ArrowLeft className="mr-2 h-4 w-4" />
             Back
           </Button>
-          <h1 className="text-3xl font-bold text-white drop-shadow-md mt-2">Market Analytics</h1>
-          <p className="text-white/90">
+          <h1 className="text-3xl font-bold text-foreground drop-shadow-sm mt-2">Market Analytics</h1>
+          <p className="text-muted-foreground">
             Real-time insights into Calgary's construction trade market
           </p>
         </div>
@@ -153,7 +153,7 @@ export function AnalyticsDashboard({ onBack }: AnalyticsDashboardProps) {
               <CardTitle className="text-3xl font-bold text-orange-600">{uniqueTradesmen}</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="flex items-center text-sm text-slate-600">
+              <div className="flex items-center text-sm text-muted-foreground">
                 <Briefcase className="h-4 w-4 mr-1" />
                 Registered users
               </div>
@@ -166,7 +166,7 @@ export function AnalyticsDashboard({ onBack }: AnalyticsDashboardProps) {
               <CardTitle className="text-3xl font-bold text-green-600">${averageRate}</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="flex items-center text-sm text-slate-600">
+              <div className="flex items-center text-sm text-muted-foreground">
                 <DollarSign className="h-4 w-4 mr-1" />
                 Across all trades
               </div>
@@ -179,7 +179,7 @@ export function AnalyticsDashboard({ onBack }: AnalyticsDashboardProps) {
               <CardTitle className="text-3xl font-bold text-purple-600">{averageExperience}y</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="flex items-center text-sm text-slate-600">
+              <div className="flex items-center text-sm text-muted-foreground">
                 <MapPin className="h-4 w-4 mr-1" />
                 Years in trade
               </div>
@@ -312,23 +312,23 @@ export function AnalyticsDashboard({ onBack }: AnalyticsDashboardProps) {
               </CardHeader>
               <CardContent>
                 <div className="grid md:grid-cols-3 gap-4 mb-6">
-                  <div className="p-4 bg-slate-50 rounded-lg">
-                    <p className="text-sm text-slate-600">Active Listings</p>
-                    <p className="text-2xl text-slate-900">{tradeDetails.length}</p>
+                  <div className="p-4 bg-muted/50 rounded-lg">
+                    <p className="text-sm text-muted-foreground">Active Listings</p>
+                    <p className="text-2xl text-foreground">{tradeDetails.length}</p>
                   </div>
-                  <div className="p-4 bg-slate-50 rounded-lg">
-                    <p className="text-sm text-slate-600">Average Rate</p>
-                    <p className="text-2xl text-slate-900">${tradeAvgRate}</p>
+                  <div className="p-4 bg-muted/50 rounded-lg">
+                    <p className="text-sm text-muted-foreground">Average Rate</p>
+                    <p className="text-2xl text-foreground">${tradeAvgRate}</p>
                   </div>
-                  <div className="p-4 bg-slate-50 rounded-lg">
-                    <p className="text-sm text-slate-600">Avg Experience</p>
-                    <p className="text-2xl text-slate-900">{tradeAvgExp} years</p>
+                  <div className="p-4 bg-muted/50 rounded-lg">
+                    <p className="text-sm text-muted-foreground">Avg Experience</p>
+                    <p className="text-2xl text-foreground">{tradeAvgExp} years</p>
                   </div>
                 </div>
 
                 {areaComparison.length > 0 && (
                   <div>
-                    <h3 className="mb-4">Rate Comparison by Area</h3>
+                    <h3 className="mb-4 text-foreground">Rate Comparison by Area</h3>
                     <ResponsiveContainer width="100%" height={300}>
                       <BarChart data={areaComparison}>
                         <CartesianGrid strokeDasharray="3 3" />

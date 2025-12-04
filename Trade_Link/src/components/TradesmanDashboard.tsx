@@ -13,6 +13,7 @@ import { TradeType, ServiceArea, TradeListing } from '../types';
 import { tradeTypes, serviceAreas } from '../lib/mockData';
 import { getTradeListings, createTradeListing, updateTradeListing, deleteTradeListing } from '../lib/api';
 import { toast } from 'sonner';
+import Threads from './ui/Threads';
 
 interface TradesmanDashboardProps {
   userName: string;
@@ -142,13 +143,16 @@ export function TradesmanDashboard({ userName, userId, userEmail, onNavigate }: 
   }
 
   return (
-    <div className="min-h-screen bg-slate-50">
+    <div className="min-h-screen bg-background relative overflow-hidden">
+      <div className="absolute inset-0 z-0 pointer-events-none hidden dark:block">
+        <Threads color={[1, 1, 1]} amplitude={1} distance={0} enableMouseInteraction={true} />
+      </div>
       {/* Header */}
-      <header className="bg-white border-b border-slate-200 sticky top-0 z-10">
+      <header className="bg-card border-b border-border sticky top-0 z-10 relative">
         <div className="max-w-7xl mx-auto px-4 py-4 flex items-center justify-between">
           <div>
-            <h1 className="text-3xl text-slate-900">Trade Link</h1>
-            <p className="text-slate-600">Welcome back, {userName}</p>
+            <h1 className="text-3xl text-foreground">Trade Link</h1>
+            <p className="text-muted-foreground">Welcome back, {userName}</p>
           </div>
           <div className="flex gap-2">
             <Button variant="outline" onClick={() => onNavigate('analytics')}>
@@ -167,7 +171,7 @@ export function TradesmanDashboard({ userName, userId, userEmail, onNavigate }: 
         </div>
       </header>
 
-      <main className="max-w-7xl mx-auto px-4 py-8">
+      <main className="max-w-7xl mx-auto px-4 py-8 relative z-10">
         {/* Stats Cards */}
         <div className="grid md:grid-cols-3 gap-6 mb-8">
           <Card>
@@ -175,7 +179,7 @@ export function TradesmanDashboard({ userName, userId, userEmail, onNavigate }: 
               <CardTitle>Active Listings</CardTitle>
             </CardHeader>
             <CardContent>
-              <p className="text-4xl text-slate-900">{myListings.length}</p>
+              <p className="text-4xl text-foreground">{myListings.length}</p>
             </CardContent>
           </Card>
 
@@ -197,7 +201,7 @@ export function TradesmanDashboard({ userName, userId, userEmail, onNavigate }: 
               <CardTitle>Trade Categories</CardTitle>
             </CardHeader>
             <CardContent>
-              <p className="text-4xl text-slate-900">
+              <p className="text-4xl text-foreground">
                 {new Set(myListings.map(l => l.tradeType)).size}
               </p>
             </CardContent>
@@ -206,7 +210,7 @@ export function TradesmanDashboard({ userName, userId, userEmail, onNavigate }: 
 
         {/* Listings Management */}
         <div className="flex items-center justify-between mb-6">
-          <h2 className="text-2xl text-slate-900">My Listings</h2>
+          <h2 className="text-2xl text-foreground">My Listings</h2>
           <Dialog open={isDialogOpen} onOpenChange={(open) => {
             setIsDialogOpen(open);
             if (!open) resetForm();
@@ -351,16 +355,16 @@ export function TradesmanDashboard({ userName, userId, userEmail, onNavigate }: 
                       </CardDescription>
                     </div>
                     <div className="text-right">
-                      <div className="flex items-center gap-1 text-slate-900">
+                      <div className="flex items-center gap-1 text-foreground">
                         <DollarSign className="h-5 w-5" />
                         <span className="text-2xl">{listing.rate}</span>
                       </div>
-                      <p className="text-xs text-slate-600">{listing.rateUnit}</p>
+                      <p className="text-xs text-muted-foreground">{listing.rateUnit}</p>
                     </div>
                   </div>
                 </CardHeader>
                 <CardContent className="space-y-4">
-                  <p className="text-slate-700">{listing.description}</p>
+                  <p className="text-muted-foreground">{listing.description}</p>
 
                   <div className="flex flex-wrap gap-2">
                     {listing.serviceAreas.map(area => (

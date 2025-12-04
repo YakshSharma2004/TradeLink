@@ -56,16 +56,16 @@ export function ProfileView({ userName, userEmail, userRole, userId, onBack }: P
   };
 
   return (
-    <div className="min-h-screen bg-slate-50">
+    <div className="min-h-screen bg-background">
       {/* Header */}
-      <header className="bg-white border-b border-slate-200 sticky top-0 z-10">
+      <header className="bg-card border-b border-border sticky top-0 z-10">
         <div className="max-w-7xl mx-auto px-4 py-4">
           <Button variant="ghost" onClick={onBack}>
             <ArrowLeft className="mr-2 h-4 w-4" />
             Back
           </Button>
-          <h1 className="text-3xl text-slate-900 mt-2">Profile</h1>
-          <p className="text-slate-600">Manage your account information</p>
+          <h1 className="text-3xl text-foreground mt-2">Profile</h1>
+          <p className="text-muted-foreground">Manage your account information</p>
         </div>
       </header>
 
@@ -133,8 +133,8 @@ export function ProfileView({ userName, userEmail, userRole, userId, onBack }: P
                             onChange={(e) => setName(e.target.value)}
                           />
                         ) : (
-                          <div className="flex items-center gap-2 text-slate-700">
-                            <User className="h-4 w-4 text-slate-500" />
+                          <div className="flex items-center gap-2 text-foreground">
+                            <User className="h-4 w-4 text-muted-foreground" />
                             <span>{name}</span>
                           </div>
                         )}
@@ -152,8 +152,8 @@ export function ProfileView({ userName, userEmail, userRole, userId, onBack }: P
                             onChange={(e) => setEmail(e.target.value)}
                           />
                         ) : (
-                          <div className="flex items-center gap-2 text-slate-700">
-                            <Mail className="h-4 w-4 text-slate-500" />
+                          <div className="flex items-center gap-2 text-foreground">
+                            <Mail className="h-4 w-4 text-muted-foreground" />
                             <span>{email}</span>
                           </div>
                         )}
@@ -171,8 +171,8 @@ export function ProfileView({ userName, userEmail, userRole, userId, onBack }: P
                             onChange={(e) => setPhone(e.target.value)}
                           />
                         ) : (
-                          <div className="flex items-center gap-2 text-slate-700">
-                            <Phone className="h-4 w-4 text-slate-500" />
+                          <div className="flex items-center gap-2 text-foreground">
+                            <Phone className="h-4 w-4 text-muted-foreground" />
                             <span>{phone}</span>
                           </div>
                         )}
@@ -192,8 +192,8 @@ export function ProfileView({ userName, userEmail, userRole, userId, onBack }: P
                               onChange={(e) => setExperience(e.target.value)}
                             />
                           ) : (
-                            <div className="flex items-center gap-2 text-slate-700">
-                              <Briefcase className="h-4 w-4 text-slate-500" />
+                            <div className="flex items-center gap-2 text-foreground">
+                              <Briefcase className="h-4 w-4 text-muted-foreground" />
                               <span>{experience || 'Not specified'} years</span>
                             </div>
                           )}
@@ -213,8 +213,8 @@ export function ProfileView({ userName, userEmail, userRole, userId, onBack }: P
                               onChange={(e) => setCompany(e.target.value)}
                             />
                           ) : (
-                            <div className="flex items-center gap-2 text-slate-700">
-                              <Briefcase className="h-4 w-4 text-slate-500" />
+                            <div className="flex items-center gap-2 text-foreground">
+                              <Briefcase className="h-4 w-4 text-muted-foreground" />
                               <span>{company || 'Not specified'}</span>
                             </div>
                           )}
@@ -235,7 +235,7 @@ export function ProfileView({ userName, userEmail, userRole, userId, onBack }: P
                           rows={4}
                         />
                       ) : (
-                        <p className="text-slate-700 p-3 bg-slate-50 rounded-md">
+                        <p className="text-foreground p-3 bg-muted/50 rounded-md">
                           {bio || 'No bio added yet'}
                         </p>
                       )}
@@ -249,8 +249,8 @@ export function ProfileView({ userName, userEmail, userRole, userId, onBack }: P
               <div className="space-y-6">
                 <div className="flex justify-between items-center">
                   <div>
-                    <h2 className="text-xl font-semibold">Your Projects</h2>
-                    <p className="text-slate-600">Showcase your best work</p>
+                    <h2 className="text-xl font-semibold text-foreground">Your Projects</h2>
+                    <p className="text-muted-foreground">Showcase your best work</p>
                   </div>
                   <AddProjectDialog userId={userId} onProjectAdded={loadProjects} />
                 </div>
@@ -258,9 +258,9 @@ export function ProfileView({ userName, userEmail, userRole, userId, onBack }: P
                 {projects.length === 0 ? (
                   <Card>
                     <CardContent className="flex flex-col items-center justify-center py-12 text-center">
-                      <Briefcase className="h-12 w-12 text-slate-300 mb-4" />
-                      <h3 className="text-lg font-medium text-slate-900">No projects yet</h3>
-                      <p className="text-slate-500 mb-4">Start building your portfolio by adding your first project.</p>
+                      <Briefcase className="h-12 w-12 text-muted-foreground mb-4" />
+                      <h3 className="text-lg font-medium text-foreground">No projects yet</h3>
+                      <p className="text-muted-foreground mb-4">Start building your portfolio by adding your first project.</p>
                       <AddProjectDialog userId={userId} onProjectAdded={loadProjects} />
                     </CardContent>
                   </Card>
@@ -296,30 +296,30 @@ export function ProfileView({ userName, userEmail, userRole, userId, onBack }: P
               <CardDescription>Manage your account preferences</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
-              <div className="flex items-center justify-between p-4 bg-slate-50 rounded-lg">
+              <div className="flex items-center justify-between p-4 bg-muted/30 rounded-lg">
                 <div>
-                  <p>Account Type</p>
-                  <p className="text-sm text-slate-600 capitalize">{userRole}</p>
+                  <p className="text-foreground">Account Type</p>
+                  <p className="text-sm text-muted-foreground capitalize">{userRole}</p>
                 </div>
                 <Button variant="outline" size="sm">
                   Change
                 </Button>
               </div>
 
-              <div className="flex items-center justify-between p-4 bg-slate-50 rounded-lg">
+              <div className="flex items-center justify-between p-4 bg-muted/30 rounded-lg">
                 <div>
-                  <p>Email Notifications</p>
-                  <p className="text-sm text-slate-600">Receive updates about your listings</p>
+                  <p className="text-foreground">Email Notifications</p>
+                  <p className="text-sm text-muted-foreground">Receive updates about your listings</p>
                 </div>
                 <Button variant="outline" size="sm">
                   Configure
                 </Button>
               </div>
 
-              <div className="flex items-center justify-between p-4 bg-slate-50 rounded-lg">
+              <div className="flex items-center justify-between p-4 bg-muted/30 rounded-lg">
                 <div>
-                  <p>Password</p>
-                  <p className="text-sm text-slate-600">Last changed 30 days ago</p>
+                  <p className="text-foreground">Password</p>
+                  <p className="text-sm text-muted-foreground">Last changed 30 days ago</p>
                 </div>
                 <Button variant="outline" size="sm">
                   Update
@@ -329,20 +329,20 @@ export function ProfileView({ userName, userEmail, userRole, userId, onBack }: P
           </Card>
 
           {/* Danger Zone */}
-          <Card className="border-red-200">
+          <Card className="border-red-200 dark:border-red-900/50">
             <CardHeader>
-              <CardTitle className="text-red-600">Danger Zone</CardTitle>
+              <CardTitle className="text-red-600 dark:text-red-500">Danger Zone</CardTitle>
               <CardDescription>Irreversible account actions</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
-              <div className="flex items-center justify-between p-4 bg-red-50 rounded-lg">
+              <div className="flex items-center justify-between p-4 bg-red-50 dark:bg-black rounded-lg">
                 <div>
-                  <p className="text-red-900">Delete Account</p>
-                  <p className="text-sm text-red-700">
+                  <p className="text-red-900 dark:text-red-200">Delete Account</p>
+                  <p className="text-sm text-red-700 dark:text-red-400">
                     Permanently delete your account and all data
                   </p>
                 </div>
-                <Button variant="outline" size="sm" className="text-red-600 border-red-300 hover:bg-red-50">
+                <Button variant="outline" size="sm" className="text-red-600 border-red-300 hover:bg-red-50 dark:border-red-800 dark:hover:bg-red-900/50">
                   Delete
                 </Button>
               </div>

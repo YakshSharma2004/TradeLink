@@ -6,28 +6,29 @@ import { Hammer } from 'lucide-react';
 import { UserRole } from '../types';
 import { login } from '../lib/api';
 import { gradients, hoverLift } from '../lib/styles';
+import Squares from './ui/Squares';
 
 const styles = {
-  container: "min-h-screen bg-slate-50 flex items-center justify-center p-4 dark:bg-slate-950",
-  card: "w-full max-w-xl bg-white rounded-3xl shadow-xl p-8 border border-slate-100 dark:bg-slate-900 dark:border-slate-800",
+  container: "min-h-screen bg-background flex items-center justify-center p-4 relative overflow-hidden",
+  card: "w-full max-w-xl bg-card rounded-3xl shadow-xl p-8 border border-border relative z-10",
   header: {
     wrapper: "mb-8",
-    iconContainer: `w-12 h-12 ${gradients.construction} rounded-xl flex items-center justify-center shadow-lg shadow-gray-900/10`,
-    title: "text-3xl font-bold text-slate-900 tracking-tight dark:text-white",
-    subtitle: "text-slate-500 font-medium dark:text-slate-400"
+    iconContainer: `w-12 h-12 ${gradients.construction} rounded-xl flex items-center justify-center shadow-lg shadow-primary/10`,
+    title: "text-3xl font-bold text-foreground tracking-tight",
+    subtitle: "text-muted-foreground font-medium"
   },
   roleButton: (isActive: boolean) =>
     `flex-1 py-3 px-4 rounded-lg transition-all ${isActive
-      ? 'bg-white shadow-sm dark:bg-slate-800 dark:text-white'
-      : 'hover:bg-slate-50 dark:hover:bg-slate-800/50 dark:text-slate-400'}`,
+      ? 'bg-primary text-primary-foreground shadow-sm'
+      : 'hover:bg-accent hover:text-accent-foreground text-muted-foreground'}`,
   form: {
-    label: "text-slate-900 dark:text-slate-200",
-    input: "mt-2 bg-slate-50 border-slate-200 dark:bg-slate-800 dark:border-slate-700 dark:text-white",
-    submitButton: `w-full bg-slate-900 hover:bg-slate-800 py-6 text-base dark:bg-white dark:text-slate-900 dark:hover:bg-slate-100 ${hoverLift}`
+    label: "text-foreground",
+    input: "mt-2 bg-input-background text-foreground border-input focus:border-ring focus:ring-1 focus:ring-ring",
+    submitButton: `w-full bg-primary hover:bg-primary/90 py-6 text-base text-primary-foreground ${hoverLift}`
   },
   signupLink: {
-    text: "text-center mt-6 text-slate-600 dark:text-slate-400",
-    button: "text-slate-900 hover:underline dark:text-white"
+    text: "text-center mt-6 text-muted-foreground",
+    button: "text-foreground hover:underline"
   }
 };
 
@@ -64,7 +65,16 @@ export function LoginPage({ onLogin, onNavigateToSignup }: LoginPageProps) {
 
   return (
     <div className={styles.container}>
-      <div className="w-full max-w-xl">
+      <div className="absolute inset-0 z-0 hidden dark:block">
+        <Squares
+          speed={0.5}
+          squareSize={40}
+          direction='diagonal'
+          borderColor='#fff'
+          hoverFillColor='#222'
+        />
+      </div>
+      <div className="w-full max-w-xl relative z-10">
         <div className={styles.card}>
           {/* Header */}
           <div className={styles.header.wrapper}>
@@ -80,7 +90,7 @@ export function LoginPage({ onLogin, onNavigateToSignup }: LoginPageProps) {
           </div>
 
           {/* Role Selection Tabs */}
-          <div className="bg-slate-100 rounded-xl p-1 flex gap-1 mb-6 dark:bg-slate-800/50">
+          <div className="bg-muted rounded-xl p-1 flex gap-1 mb-6">
             <button
               type="button"
               onClick={() => setSelectedRole('builder')}
