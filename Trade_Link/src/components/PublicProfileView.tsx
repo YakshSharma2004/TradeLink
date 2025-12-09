@@ -2,8 +2,8 @@ import { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './ui/card';
 import { Button } from './ui/button';
 import { Avatar, AvatarFallback } from './ui/avatar';
-import { ArrowLeft, User, Mail, Phone, Briefcase } from 'lucide-react';
-import { UserRole, User as UserType } from '../types';
+import { ArrowLeft, Mail, Phone, Briefcase } from 'lucide-react';
+import { User as UserType } from '../types';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from './ui/tabs';
 import { Project, getProjects, getUser } from '../lib/api';
 import { ProjectCard } from './ProjectCard';
@@ -26,14 +26,15 @@ export function PublicProfileView({ userId, initialUserData, onBack, onChat }: P
         const loadData = async () => {
             try {
                 setLoading(true);
+                let currentUser = user;
                 // Load user data if not provided
-                if (!user) {
-                    const userData = await getUser(userId);
-                    setUser(userData);
+                if (!currentUser) {
+                    currentUser = await getUser(userId);
+                    setUser(currentUser);
                 }
                 // Always load projects
                 const projectData = await getProjects(userId);
-                console.log('PublicProfileView - Loaded User:', user || userData);
+                console.log('PublicProfileView - Loaded User:', currentUser);
                 console.log('PublicProfileView - Loaded Projects:', projectData);
                 setProjects(projectData);
             } catch (error) {
@@ -48,7 +49,7 @@ export function PublicProfileView({ userId, initialUserData, onBack, onChat }: P
 
     if (loading) {
         return (
-            <div className="min-h-screen bg-background flex items-center justify-center">
+            <div className="min-h-screen bg-white dark:bg-black flex items-center justify-center">
                 <p className="text-muted-foreground">Loading profile...</p>
             </div>
         );
