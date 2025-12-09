@@ -71,8 +71,7 @@ export default function App() {
   };
 
   const handleSignup = (role: UserRole, email: string, name: string, phone?: string) => {
-    // For now, just log them in after signup
-    handleLogin(role, email, name);
+    navigate('/login');
   };
 
   const handleSelectTrade = (trade: TradeType) => {

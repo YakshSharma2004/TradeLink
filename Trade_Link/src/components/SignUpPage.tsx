@@ -57,6 +57,7 @@ export function SignUpPage({ onSignup, onBackToLogin }: SignUpPageProps) {
                     phone,
                     password
                 });
+                toast.success('Account created successfully! Please log in.');
                 onSignup(user.role, user.email, user.name, user.phone);
             } catch (err: any) {
                 console.error('Signup failed:', err);
