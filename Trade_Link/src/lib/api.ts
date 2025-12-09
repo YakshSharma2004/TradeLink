@@ -13,8 +13,15 @@ async function fetchAPI<T>(endpoint: string, options?: RequestInit): Promise<T> 
     });
 
     if (!response.ok) {
-        const error = await response.json().catch(() => ({ error: 'Request failed' }));
-        throw new Error(error.error || `HTTP ${response.status}`);
+        const text = await response.text();
+        let errorData;
+        try {
+            errorData = JSON.parse(text);
+        } catch (e) {
+            console.error('API Error (Non-JSON response):', text);
+            errorData = { error: 'Request failed', details: text };
+        }
+        throw new Error(errorData.error || `HTTP ${response.status}`);
     }
 
     // Handle 204 No Content

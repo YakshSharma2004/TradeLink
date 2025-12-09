@@ -71,7 +71,7 @@ export function LoginPage({ onLogin, onNavigateToSignup }: LoginPageProps) {
       } else if (errorMessage.includes('Failed to fetch') || errorMessage.includes('Network request failed')) {
         toast.error('Unable to connect to server. Please check your internet connection.');
       } else {
-        toast.error('Login failed. Please try again.');
+        toast.error(errorMessage);
       }
     }
   };

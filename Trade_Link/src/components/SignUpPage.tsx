@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { toast } from 'sonner';
 import { Button } from './ui/button';
 import { Input } from './ui/input';
 import { Label } from './ui/label';
@@ -57,9 +58,10 @@ export function SignUpPage({ onSignup, onBackToLogin }: SignUpPageProps) {
                     password
                 });
                 onSignup(user.role, user.email, user.name, user.phone);
-            } catch (err) {
+            } catch (err: any) {
                 console.error('Signup failed:', err);
-                alert('Signup failed. Please try again.');
+                const errorMessage = err.message || 'Signup failed. Please try again.';
+                toast.error(errorMessage);
             }
         }
     };

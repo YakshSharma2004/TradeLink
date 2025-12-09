@@ -2,6 +2,8 @@ const express = require('express');
 const User = require('../models/User');
 const router = express.Router();
 
+console.log('Loading authRoutes...');
+
 // POST /api/auth/signup
 router.post('/signup', async (req, res) => {
     try {
@@ -35,8 +37,10 @@ router.post('/login', async (req, res) => {
     
     // Check if user exists with email first
     const user = await User.findOne({ email });
+    console.log('DEBUG: Login attempt for:', email, 'User found:', !!user);
     
     if (!user) {
+      console.log('DEBUG: User not found, sending 404');
       return res.status(404).json({ error: 'Account not found' });
     }
 
