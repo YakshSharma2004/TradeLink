@@ -87,6 +87,11 @@ export default function App() {
     navigate('/chat');
   };
 
+  const handleLogout = () => {
+    setState(prev => ({ ...prev, user: null }));
+    navigate('/login');
+  };
+
   const handleNavigate = (view: 'analytics' | 'chat' | 'profile') => {
     navigate(`/${view}`);
   };
@@ -101,6 +106,18 @@ export default function App() {
       return <Navigate to="/login" replace />;
     }
     return children;
+  };
+
+  const handleUserUpdated = (updatedUser: { id: string; name: string; email: string; role: UserRole }) => {
+    setState(prev => ({
+      ...prev,
+      user: {
+        id: updatedUser.id,
+        name: updatedUser.name,
+        email: updatedUser.email,
+        role: updatedUser.role
+      }
+    }));
   };
 
   return (
@@ -190,6 +207,8 @@ export default function App() {
               userRole={state.user?.role || 'builder'}
               userId={state.user?.id || ''}
               onBack={handleBackToDashboard}
+              onLogout={handleLogout}
+              onUserUpdated={handleUserUpdated}
             />
           </ProtectedRoute>
         } />

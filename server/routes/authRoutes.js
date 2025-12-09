@@ -36,8 +36,10 @@ router.post('/login', async (req, res) => {
     const { email, role, password } = req.body;
     
     // Check if user exists with email first
+    console.log('Current Database:', require('mongoose').connection.name);
     const user = await User.findOne({ email });
-    console.log('DEBUG: Login attempt for:', email, 'User found:', !!user);
+    console.log('DEBUG: Login attempt for:', email); 
+    console.log('DEBUG: User found in DB:', user);
     
     if (!user) {
       console.log('DEBUG: User not found, sending 404');

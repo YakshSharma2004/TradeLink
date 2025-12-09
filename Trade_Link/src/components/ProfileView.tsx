@@ -5,7 +5,7 @@ import { Input } from './ui/input';
 import { Label } from './ui/label';
 import { Textarea } from './ui/textarea';
 import { Avatar, AvatarFallback } from './ui/avatar';
-import { ArrowLeft, User, Mail, Phone, Briefcase, Edit2, Save } from 'lucide-react';
+import { ArrowLeft, User, Mail, Phone, Briefcase, Edit2, Save, LogOut } from 'lucide-react';
 import { UserRole } from '../types';
 import { toast } from 'sonner';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from './ui/tabs';
@@ -19,9 +19,11 @@ interface ProfileViewProps {
   userRole: UserRole;
   userId: string;
   onBack: () => void;
+  onLogout: () => void;
+  onUserUpdated: (user: { id: string; name: string; email: string; role: UserRole }) => void;
 }
 
-export function ProfileView({ userName, userEmail, userRole, userId, onBack }: ProfileViewProps) {
+export function ProfileView({ userName, userEmail, userRole, userId, onBack, onLogout, onUserUpdated }: ProfileViewProps) {
   const [isEditing, setIsEditing] = useState(false);
   const [name, setName] = useState(userName);
   const [email, setEmail] = useState(userEmail);
@@ -87,6 +89,24 @@ export function ProfileView({ userName, userEmail, userRole, userId, onBack }: P
     setName(userName);
     setEmail(userEmail);
     setIsEditing(false);
+  };
+
+  const handleRoleChange = async () => {
+    if (!confirm('Are you sure you want to switch your account type? the dashboard will be different')) return;
+
+    setIsLoading(true);
+    const newRole: UserRole = userRole === 'builder' ? 'tradesman' : 'builder';
+
+    try {
+      await updateUser(userId, { role: newRole });
+      onUserUpdated({ id: userId, name, email, role: newRole });
+      toast.success(`Account switched to ${newRole}`);
+    } catch (error) {
+      console.error('Failed to update role:', error);
+      toast.error('Failed to switch account type');
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -341,7 +361,7 @@ export function ProfileView({ userName, userEmail, userRole, userId, onBack }: P
                   <p className="text-foreground">Account Type</p>
                   <p className="text-sm text-muted-foreground capitalize">{userRole}</p>
                 </div>
-                <Button variant="outline" size="sm">
+                <Button variant="outline" size="sm" onClick={handleRoleChange} disabled={isLoading}>
                   Change
                 </Button>
               </div>
@@ -363,6 +383,17 @@ export function ProfileView({ userName, userEmail, userRole, userId, onBack }: P
                 </div>
                 <Button variant="outline" size="sm">
                   Update
+                </Button>
+              </div>
+
+              <div className="flex items-center justify-between p-4 bg-muted/30 rounded-lg">
+                <div>
+                  <p className="text-foreground">Log Out</p>
+                  <p className="text-sm text-muted-foreground">Sign out of your account</p>
+                </div>
+                <Button variant="outline" size="sm" onClick={onLogout} className="text-muted-foreground hover:text-foreground">
+                  <LogOut className="mr-2 h-4 w-4" />
+                  Log Out
                 </Button>
               </div>
             </CardContent>
