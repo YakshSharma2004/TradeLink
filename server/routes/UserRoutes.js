@@ -6,7 +6,8 @@ const router = express.Router();
 
 const toUserDto = (user) => ({
   id: user._id.toString(),   // matches frontend User.id
-  name: user.name,
+  firstName: user.firstName,
+  lastName: user.lastName,
   email: user.email,
   phone: user.phone,
   bio: user.bio,
@@ -24,7 +25,8 @@ router.get('/', async (req, res) => {
 
     if (search) {
       filter.$or = [
-        { name: new RegExp(search, 'i') },
+        { firstName: new RegExp(search, 'i') },
+        { lastName: new RegExp(search, 'i') },
         { email: new RegExp(search, 'i') },
       ];
     }
@@ -52,9 +54,9 @@ router.get('/:id', async (req, res) => {
 // POST /api/users
 router.post('/', async (req, res) => {
   try {
-    const { name, email, phone, role, bio } = req.body;
+    const { firstName, lastName, email, phone, role, bio } = req.body;
 
-    const user = new User({ name, email, phone, role, bio });
+    const user = new User({ firstName, lastName, email, phone, role, bio });
     const saved = await user.save();
 
     res.status(201).json(toUserDto(saved));
@@ -67,11 +69,11 @@ router.post('/', async (req, res) => {
 // PATCH /api/users/:id
 router.patch('/:id', async (req, res) => {
   try {
-    const { name, email, phone, role, bio } = req.body;
+    const { firstName, lastName, email, phone, role, bio } = req.body;
 
     const updated = await User.findByIdAndUpdate(
       req.params.id,
-      { name, email, phone, role, bio },
+      { firstName, lastName, email, phone, role, bio },
       { new: true, runValidators: true },
     );
 

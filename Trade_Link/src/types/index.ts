@@ -2,7 +2,7 @@ export type UserRole = 'builder' | 'tradesman' | 'other';
 
 export type ServiceArea = 'NE' | 'NW' | 'SE' | 'SW';
 
-export type TradeType = 
+export type TradeType =
   | 'Demolition'
   | 'Foundation Grader'
   | 'Foundation Pouring'
@@ -22,7 +22,8 @@ export type TradeType =
 
 export interface User {
   id: string;
-  name: string;
+  firstName: string;
+  lastName: string;
   email: string;
   phone: string;
   role: UserRole;

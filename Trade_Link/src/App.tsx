@@ -15,7 +15,9 @@ import { UserRole, TradeType } from './types';
 interface AppState {
   user: {
     id: string;
-    name: string;
+    firstName: string;
+    lastName: string;
+    name: string; // Keep for backward compatibility (getter maybe?) or just concat
     email: string;
     role: UserRole;
   } | null;
@@ -56,9 +58,27 @@ export default function App() {
 
   const handleLogin = (role: UserRole, email: string, name: string, id?: string) => {
     const userId = id || Date.now().toString();
+
+    // Attempt to split name if provided as a single string
+    let fName = '';
+    let lName = '';
+
+    if (name) {
+      const parts = name.split(' ');
+      fName = parts[0];
+      lName = parts.slice(1).join(' ') || '';
+    }
+
     setState(prev => ({
       ...prev,
-      user: { id: userId, name, email, role },
+      user: {
+        id: userId,
+        firstName: fName,
+        lastName: lName,
+        name: name,
+        email,
+        role
+      },
     }));
 
     if (role === 'builder') {
@@ -113,6 +133,8 @@ export default function App() {
       ...prev,
       user: {
         id: updatedUser.id,
+        firstName: updatedUser.name.split(' ')[0],
+        lastName: updatedUser.name.split(' ').slice(1).join(' '),
         name: updatedUser.name,
         email: updatedUser.email,
         role: updatedUser.role

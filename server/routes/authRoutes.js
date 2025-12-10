@@ -7,7 +7,7 @@ console.log('Loading authRoutes...');
 // POST /api/auth/signup
 router.post('/signup', async (req, res) => {
     try {
-        const { name, email, phone, role, password } = req.body;
+        const { firstName, lastName, email, phone, role, password } = req.body;
         
         // Check if user already exists
         const existingUser = await User.findOne({ email });
@@ -15,12 +15,13 @@ router.post('/signup', async (req, res) => {
             return res.status(400).json({ error: 'Email is already registered' });
         }
         
-        const user = new User({ name, email, phone, role, password });
+        const user = new User({ firstName, lastName, email, phone, role, password });
         await user.save();
         
         return res.status(201).json({
             id: user._id.toString(),
-            name: user.name,
+            firstName: user.firstName,
+            lastName: user.lastName,
             email: user.email,
             role: user.role
         });
@@ -58,7 +59,8 @@ router.post('/login', async (req, res) => {
     
     res.json({
       id: user._id.toString(),
-      name: user.name,
+      firstName: user.firstName,
+      lastName: user.lastName,
       email: user.email,
       role: user.role
     });

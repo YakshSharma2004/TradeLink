@@ -61,6 +61,11 @@ app.use('/api', (req, res) => {
     res.status(404).json({ error: `Route not found: ${req.method} ${req.originalUrl}` });
 });
 
+app.get('/test', (req, res) => {
+    res.send("BACKEND IS WORKING 3001");
+});
+
+
 // Socket.IO Connection Handler
 io.on('connection', (socket) => {
   console.log('User connected:', socket.id);

@@ -164,13 +164,15 @@ export async function markMessageAsRead(messageId: string): Promise<Message> {
 export interface LoginData {
     email: string;
     role: UserRole;
-    name?: string;
+    firstName?: string;
+    lastName?: string;
     password?: string;
 }
 
 export interface SignUpData {
     email: string;
-    name: string;
+    firstName: string;
+    lastName: string;
     role: UserRole;
     phone?: string;
     password?: string;

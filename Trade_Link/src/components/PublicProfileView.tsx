@@ -87,17 +87,17 @@ export function PublicProfileView({ userId, initialUserData, onBack, onChat }: P
                                 <div className="flex items-center gap-4">
                                     <Avatar className="h-20 w-20">
                                         <AvatarFallback className="text-2xl">
-                                            {user.name.split(' ').map(n => n[0]).join('')}
+                                            {user.firstName ? user.firstName[0] : ''}{user.lastName ? user.lastName[0] : ''}
                                         </AvatarFallback>
                                     </Avatar>
                                     <div>
-                                        <CardTitle className="text-2xl">{user.name}</CardTitle>
+                                        <CardTitle className="text-2xl">{user.firstName} {user.lastName}</CardTitle>
                                         <CardDescription className="text-base capitalize">
                                             {user.role}
                                         </CardDescription>
                                     </div>
                                 </div>
-                                <Button onClick={() => onChat(user.id, user.name)}>
+                                <Button onClick={() => onChat(user.id, `${user.firstName} ${user.lastName}`)}>
                                     <MessageSquare className="mr-2 h-4 w-4" />
                                     Chat
                                 </Button>
@@ -142,7 +142,7 @@ export function PublicProfileView({ userId, initialUserData, onBack, onChat }: P
                                                 <p className="text-sm font-medium text-muted-foreground">Company</p>
                                                 <div className="flex items-center gap-2 mt-1 text-foreground">
                                                     <Briefcase className="h-4 w-4 text-muted-foreground" />
-                                                    <span>{user.name}'s Construction Co.</span> {/* Placeholder as company isn't in User type yet */}
+                                                    <span>{user.firstName} {user.lastName}'s Construction Co.</span> {/* Placeholder as company isn't in User type yet */}
                                                 </div>
                                             </div>
                                         )}

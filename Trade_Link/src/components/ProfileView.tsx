@@ -25,7 +25,10 @@ interface ProfileViewProps {
 
 export function ProfileView({ userName, userEmail, userRole, userId, onBack, onLogout, onUserUpdated }: ProfileViewProps) {
   const [isEditing, setIsEditing] = useState(false);
-  const [name, setName] = useState(userName);
+  // Initialize with split names from the passed full name
+  const [firstName, setFirstName] = useState(() => userName.split(' ')[0] || '');
+  const [lastName, setLastName] = useState(() => userName.split(' ').slice(1).join(' ') || '');
+
   const [email, setEmail] = useState(userEmail);
   const [phone, setPhone] = useState('403-555-0000');
   const [bio, setBio] = useState('');
@@ -43,13 +46,11 @@ export function ProfileView({ userName, userEmail, userRole, userId, onBack, onL
   const loadUserProfile = async () => {
     try {
       const user = await getUser(userId);
-      setName(user.name);
+      setFirstName(user.firstName);
+      setLastName(user.lastName);
       setEmail(user.email);
       if (user.phone) setPhone(user.phone);
       if (user.bio) setBio(user.bio);
-      // Update other fields if they exist on the user object
-      // Note: The User type might need to be updated to include phone, bio, etc.
-      // For now we'll just update what we have
     } catch (error) {
       console.error('Failed to load user profile:', error);
       toast.error('Failed to load profile data');
@@ -69,14 +70,21 @@ export function ProfileView({ userName, userEmail, userRole, userId, onBack, onL
     setIsLoading(true);
     try {
       await updateUser(userId, {
-        name,
+        firstName,
+        lastName,
         email,
         phone,
         bio,
-        // Add other fields here once they are supported by the backend/type
       });
       toast.success('Profile updated successfully');
       setIsEditing(false);
+      // Notify parent app of update (concatenating name for backward compatibility)
+      onUserUpdated({
+        id: userId,
+        name: `${firstName} ${lastName}`,
+        email,
+        role: userRole
+      });
     } catch (error) {
       console.error('Failed to update profile:', error);
       toast.error('Failed to update profile');
@@ -86,8 +94,11 @@ export function ProfileView({ userName, userEmail, userRole, userId, onBack, onL
   };
 
   const handleCancel = () => {
-    setName(userName);
-    setEmail(userEmail);
+    // Revert to props or reload from API? 
+    // Ideally we should keep original loaded state. 
+    // For simplicity, let's just reload from props or we can refetch.
+    // Let's refetch to be safe/accurate to DB.
+    loadUserProfile();
     setIsEditing(false);
   };
 
@@ -99,7 +110,7 @@ export function ProfileView({ userName, userEmail, userRole, userId, onBack, onL
 
     try {
       await updateUser(userId, { role: newRole });
-      onUserUpdated({ id: userId, name, email, role: newRole });
+      onUserUpdated({ id: userId, name: `${firstName} ${lastName}`, email, role: newRole });
       toast.success(`Account switched to ${newRole}`);
     } catch (error) {
       console.error('Failed to update role:', error);
@@ -132,11 +143,11 @@ export function ProfileView({ userName, userEmail, userRole, userId, onBack, onL
                 <div className="flex items-center gap-4">
                   <Avatar className="h-20 w-20">
                     <AvatarFallback className="text-2xl">
-                      {name.split(' ').map(n => n[0]).join('')}
+                      {firstName && firstName[0]}{lastName && lastName[0]}
                     </AvatarFallback>
                   </Avatar>
                   <div>
-                    <CardTitle className="text-2xl">{name}</CardTitle>
+                    <CardTitle className="text-2xl">{firstName} {lastName}</CardTitle>
                     <CardDescription className="text-base capitalize">
                       {userRole}
                     </CardDescription>
@@ -184,18 +195,35 @@ export function ProfileView({ userName, userEmail, userRole, userId, onBack, onL
                 <CardContent className="space-y-4">
                   <div className="grid md:grid-cols-2 gap-4">
                     <div>
-                      <Label htmlFor="name">Full Name</Label>
+                      <Label htmlFor="firstName">First Name</Label>
                       <div className="flex items-center gap-2 mt-2">
                         {isEditing ? (
                           <Input
-                            id="name"
-                            value={name}
-                            onChange={(e) => setName(e.target.value)}
+                            id="firstName"
+                            value={firstName}
+                            onChange={(e) => setFirstName(e.target.value)}
                           />
                         ) : (
                           <div className="flex items-center gap-2 text-foreground">
                             <User className="h-4 w-4 text-muted-foreground" />
-                            <span>{name}</span>
+                            <span>{firstName}</span>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                    <div>
+                      <Label htmlFor="lastName">Last Name</Label>
+                      <div className="flex items-center gap-2 mt-2">
+                        {isEditing ? (
+                          <Input
+                            id="lastName"
+                            value={lastName}
+                            onChange={(e) => setLastName(e.target.value)}
+                          />
+                        ) : (
+                          <div className="flex items-center gap-2 text-foreground">
+                            <User className="h-4 w-4 text-muted-foreground" />
+                            <span>{lastName}</span>
                           </div>
                         )}
                       </div>

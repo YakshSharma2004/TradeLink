@@ -41,24 +41,26 @@ interface SignUpPageProps {
 
 export function SignUpPage({ onSignup, onBackToLogin }: SignUpPageProps) {
     const [selectedRole, setSelectedRole] = useState<UserRole>('builder');
-    const [name, setName] = useState('');
+    const [firstName, setFirstName] = useState('');
+    const [lastName, setLastName] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [phone, setPhone] = useState('');
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        if (email && name && password) {
+        if (email && firstName && lastName && password) {
             try {
                 const user = await signup({
                     email,
-                    name,
+                    firstName,
+                    lastName,
                     role: selectedRole,
                     phone,
                     password
                 });
                 toast.success('Account created successfully! Please log in.');
-                onSignup(user.role, user.email, user.name, user.phone);
+                onSignup(user.role, user.email, `${user.firstName} ${user.lastName}`, user.phone);
             } catch (err: any) {
                 console.error('Signup failed:', err);
                 const errorMessage = err.message || 'Signup failed. Please try again.';
@@ -129,19 +131,35 @@ export function SignUpPage({ onSignup, onBackToLogin }: SignUpPageProps) {
 
                     {/* Sign Up Form */}
                     <form onSubmit={handleSubmit} className="space-y-5">
-                        <div>
-                            <Label htmlFor="name" className={styles.form.label}>
-                                Full Name *
-                            </Label>
-                            <Input
-                                id="name"
-                                type="text"
-                                placeholder="John Doe"
-                                value={name}
-                                onChange={(e) => setName(e.target.value)}
-                                className={styles.form.input}
-                                required
-                            />
+                        <div className="flex gap-4">
+                            <div className="flex-1">
+                                <Label htmlFor="firstName" className={styles.form.label}>
+                                    First Name *
+                                </Label>
+                                <Input
+                                    id="firstName"
+                                    type="text"
+                                    placeholder="John"
+                                    value={firstName}
+                                    onChange={(e) => setFirstName(e.target.value)}
+                                    className={styles.form.input}
+                                    required
+                                />
+                            </div>
+                            <div className="flex-1">
+                                <Label htmlFor="lastName" className={styles.form.label}>
+                                    Last Name *
+                                </Label>
+                                <Input
+                                    id="lastName"
+                                    type="text"
+                                    placeholder="Doe"
+                                    value={lastName}
+                                    onChange={(e) => setLastName(e.target.value)}
+                                    className={styles.form.input}
+                                    required
+                                />
+                            </div>
                         </div>
 
                         <div>
